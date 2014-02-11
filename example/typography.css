@@ -1,0 +1,15 @@
+html {
+  font-family: monospace;
+  font-size: 18px;
+  color: #aaa;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+  font-weight: 100;
+  color: #fff;
+}
+
+h1 {
+  font-size: 3.5em;
+}
