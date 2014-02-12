@@ -34,6 +34,11 @@ Sheetify.prototype.modifier = function(modifier) {
 }
 
 Sheetify.prototype.bundle = function(opts, done) {
+  if (typeof opts === 'function') {
+    done = opts
+    opts = {}
+  }
+
   styledeps(this.entry, xtend(opts || {}, {
       transforms: this.transforms
     , modifiers: this.modifiers
