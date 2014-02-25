@@ -41,6 +41,7 @@ bundler.bundle({
 }, function(err, data) {
   if (err) throw err
   process.stdout.write(data)
+  process.stdout.write('\n')
 })
 
 function help() {
