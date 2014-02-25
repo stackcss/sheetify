@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var resolve = require('style-deps/resolve')
+var resolve = require('style-deps/lib/resolve-style')
 var sheetify = require('./sheetify')
 var subarg = require('subarg')
 var path = require('path')
@@ -12,13 +12,11 @@ var argv = subarg(
 
 convertAliases(argv, {
     t: 'transform'
-  , m: 'modifier'
   , c: 'compress'
   , v: 'version'
   , d: 'debug'
 }, {
-    transform: []
-  , modifier: []
+  transform: []
 })
 
 var files = argv._
@@ -35,10 +33,6 @@ var bundler = sheetify(files)
 
 argv.transform.forEach(function(tr) {
   bundler.transform(tr)
-})
-
-argv.modifier.forEach(function(mr) {
-  bundler.modifier(mr)
 })
 
 bundler.bundle({
