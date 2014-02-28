@@ -1,0 +1,6 @@
+@document wrap(&.no-padding) {
+  html, body {
+    margin: 0;
+    padding: 0;
+  }
+}
