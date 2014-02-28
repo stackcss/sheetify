@@ -32,7 +32,7 @@ Sheetify.prototype.bundle = function(opts, done) {
     opts = {}
   }
 
-  styledeps(this.entry, xtend(opts || {}, {
+  return styledeps(this.entry, xtend(opts || {}, {
     transforms: this.transforms
   }), done)
 }
