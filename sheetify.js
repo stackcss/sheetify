@@ -1,5 +1,5 @@
-var resolve = require('style-deps/lib/resolve-style')
 var styledeps = require('style-deps')
+var resolve = require('style-resolve')
 var xtend = require('xtend')
 
 module.exports = Sheetify
@@ -16,6 +16,8 @@ function Sheetify(entry) {
   )
 
   this.transforms = []
+  this.modifiers = []
+
   this.entry = Array.isArray(entry)
     ? entry[0]
     : entry
@@ -32,7 +34,8 @@ Sheetify.prototype.bundle = function(opts, done) {
     opts = {}
   }
 
-  return styledeps(this.entry, xtend(opts || {}, {
-    transforms: this.transforms
+  styledeps(this.entry, xtend(opts || {}, {
+      transforms: this.transforms
+    , modifiers: this.modifiers
   }), done)
 }
