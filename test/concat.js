@@ -8,8 +8,11 @@ var expected = fs.readFileSync(__dirname  + '/concat-expected.css', 'utf8')
 
 test('works', function(t) {
   t.plan(2)
-  exec(BIN + ' concat.css', {cwd: __dirname},function(err, stdout, stderr) {
+
+  exec(BIN + ' concat.css', {
+    cwd: __dirname
+  }, function(err, stdout, stderr) {
     t.ifError(err)
-    t.equal(stdout, expected)
+    t.equal(stdout.trim(), expected.trim())
   })
 })

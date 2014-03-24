@@ -16,7 +16,6 @@ function Sheetify(entry) {
   )
 
   this.transforms = []
-  this.modifiers = []
 
   this.entry = Array.isArray(entry)
     ? entry[0]

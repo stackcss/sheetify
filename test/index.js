@@ -1,5 +1,5 @@
+var sheetify = require('../sheetify')
 var wrap = require('wrap-selectors')
-var sheetify = require('./')
 var test = require('tape')
 var fs = require('fs')
 

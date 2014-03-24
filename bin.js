@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var resolve = require('style-deps/lib/resolve-style')
+var resolve = require('style-resolve')
 var sheetify = require('./sheetify')
 var subarg = require('subarg')
 var path = require('path')
