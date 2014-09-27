@@ -8,7 +8,7 @@ like [browserify](http://browserify.org/) does – including sourcemap support!
 ``` bash
 Usage:
 
-  $0 [entry file] {OPTIONS}
+  sheetify [entry file] {OPTIONS}
 
 Options:
 
