@@ -20,6 +20,8 @@ function Sheetify(entry) {
   this.entry = Array.isArray(entry)
     ? entry[0]
     : entry
+
+  return this
 }
 
 Sheetify.prototype.transform = function(transform) {
