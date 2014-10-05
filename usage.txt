@@ -1,0 +1,12 @@
+
+Usage:
+
+  $0 [entry file] {OPTIONS}
+
+Options:
+
+  --transform, -t  Include a sheetify transform.
+   --compress, -c  Compress final output.
+    --version, -v  Output version information and quit.
+      --debug, -d  Inline CSS sourcemaps to final output.
+
