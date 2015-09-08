@@ -1,6 +1,6 @@
-var styledeps = require('style-deps')
-var assert = require('assert')
-var xtend = require('xtend')
+const styledeps = require('style-deps')
+const assert = require('assert')
+const xtend = require('xtend')
 
 module.exports = Sheetify
 
