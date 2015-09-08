@@ -2,6 +2,8 @@ const wrap = require('wrap-selectors')
 const test = require('tape')
 const fs = require('fs')
 
+require('./concat')
+
 const sheetify = require('..')
 
 test('basic', function (t) {
