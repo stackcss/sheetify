@@ -3,7 +3,8 @@
   "version": "2.0.0",
   "description": "Modular CSS bundler",
   "scripts": {
-    "test": "standard && faucet test/*.js",
+    "deps": "dependency-check . && dependency-check . --extra --no-dev",
+    "test": "standard && npm run deps && faucet test/*.js",
     "format": "standard --format"
   },
   "bin": {
@@ -21,13 +22,11 @@
   "dependencies": {
     "cliclopts": "^1.1.1",
     "minimist": "^1.2.0",
-    "once": "^1.3.0",
     "style-deps": "^2.0.1",
-    "style-resolve": "0.0.0",
-    "subarg": "0.0.1",
     "xtend": "^2.1.2"
   },
   "devDependencies": {
+    "dependency-check": "^2.5.0",
     "faucet": "^0.0.1",
     "standard": "^5.2.1",
     "tape": "^2.4.2",
