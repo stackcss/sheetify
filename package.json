@@ -3,7 +3,8 @@
   "version": "2.0.0",
   "description": "Modular CSS bundler",
   "scripts": {
-    "test": "faucet test/*.js"
+    "test": "standard && faucet test/*.js",
+    "format": "standard --format"
   },
   "bin": {
     "sheetify": "bin/cli.js"
@@ -25,8 +26,9 @@
     "xtend": "^2.1.2"
   },
   "devDependencies": {
+    "faucet": "^0.0.1",
+    "standard": "^5.2.1",
     "tape": "^2.4.2",
-    "wrap-selectors": "^0.1.0",
-    "faucet": "^0.0.1"
+    "wrap-selectors": "^0.1.0"
   }
 }
