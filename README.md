@@ -1,20 +1,41 @@
-# sheetify #
+# sheetify
+Modular CSS bundler. Works with [npm](http://npmjs.org/) modules like
+[browserify](http://browserify.org/) does.
 
-A module bundler for CSS that works with [npm](http://npmjs.org/) modules
-like [browserify](http://browserify.org/) does – including sourcemap support!
+__Features__
+- source map support
+- minification
+- rich plugin ecosystem
+- easily extensible
 
-## Command-Line Usage ##
+## Usage
+__cli__
+```txt
+sheetify - Modular CSS bundler
 
-``` bash
-Usage:
-
-  sheetify [entry file] {OPTIONS}
+Usage: sheetify [options] [entry file]
 
 Options:
+  -h, --help        Output usage information
+  -v, --version     Output version number
+  -t, --transform   Include a sheetify transform
+  -m, --modifier    Include a sheetify modifier
+  -c, --compress    Compress final output
+  -d, --debug       Inline CSS sourcemaps
 
-  --transform, -t  Include a sheetify transform.
-   --modifier, -m  Include a sheetify modifier.
-   --compress, -c  Compress final output.
-    --version, -v  Output version information and quit.
-      --debug, -d  Inline CSS sourcemaps to final output.
+Examples:
+  $ sheetify index.css > bundle.css   # Bundle index.css to bundle.css
+  $ sheetify -c index.css             # Bundle and compress index.css
+  $ sheetify -d index.css             # Bundle index.css with sourcemaps
+
+Docs: https://github.com/sheetify/sheetify
+Bugs: https://github.com/sheetify/sheetify/issues
 ```
+
+__api__
+```txt
+[tbi]
+```
+
+# License
+MIT
