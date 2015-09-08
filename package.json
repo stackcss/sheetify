@@ -1,6 +1,6 @@
 {
   "name": "sheetify",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Modular CSS bundler",
   "scripts": {
     "deps": "dependency-check . && dependency-check . --extra --no-dev",
