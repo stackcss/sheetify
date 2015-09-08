@@ -10,7 +10,7 @@
   "bin": {
     "sheetify": "bin/cli.js"
   },
-  "repository": "yoshuawuyts/initialize-engine",
+  "repository": "sheetify/sheetify",
   "keywords": [
     "modular",
     "css",
