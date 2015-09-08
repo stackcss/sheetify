@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 
 var resolve = require('style-resolve')
-var sheetify = require('./sheetify')
 var subarg = require('subarg')
 var path = require('path')
 var fs = require('fs')
+
+var sheetify = require('../')
 
 var argv = subarg(
   process.argv.slice(2)

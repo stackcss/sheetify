@@ -2,7 +2,7 @@ var test = require('tape')
 var exec = require('child_process').exec
 var fs = require('fs')
 
-var BIN = require.resolve('../bin.js')
+var BIN = require.resolve('../bin/cli.js')
 
 var expected = fs.readFileSync(__dirname  + '/concat-expected.css', 'utf8')
 

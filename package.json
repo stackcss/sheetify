@@ -2,13 +2,12 @@
   "name": "sheetify",
   "version": "2.0.0",
   "description": "",
-  "main": "sheetify.js",
   "scripts": {
     "test": "faucet test/*.js"
   },
   "author": "",
   "bin": {
-    "sheetify": "bin.js"
+    "sheetify": "bin/cli.js"
   },
   "dependencies": {
     "once": "~1.3.0",

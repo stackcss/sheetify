@@ -1,7 +1,8 @@
-var sheetify = require('../sheetify')
 var wrap = require('wrap-selectors')
 var test = require('tape')
 var fs = require('fs')
+
+var sheetify = require('..')
 
 test('basic', function(t) {
   var expects = fs.readFileSync(__dirname + '/fixtures/basic-expected.css')
