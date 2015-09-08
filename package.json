@@ -1,14 +1,22 @@
 {
   "name": "sheetify",
   "version": "2.0.0",
-  "description": "",
+  "description": "Modular CSS bundler",
   "scripts": {
     "test": "faucet test/*.js"
   },
-  "author": "",
   "bin": {
     "sheetify": "bin/cli.js"
   },
+  "repository": "yoshuawuyts/initialize-engine",
+  "keywords": [
+    "modular",
+    "css",
+    "bundle",
+    "browserify",
+    "css-modules"
+  ],
+  "license": "MIT",
   "dependencies": {
     "once": "~1.3.0",
     "style-deps": "^2.0.1",
