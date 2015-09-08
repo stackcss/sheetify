@@ -26,8 +26,7 @@ Options:
 
 Examples:
   $ sheetify index.css > bundle.css   # Bundle index.css to bundle.css
-  $ sheetify -c index.css             # Bundle and compress index.css
-  $ sheetify -d index.css             # Bundle index.css with sourcemaps
+  $ sheetify -cd index.css            # Compress and include source maps
 
 Docs: https://github.com/sheetify/sheetify
 Bugs: https://github.com/sheetify/sheetify/issues
