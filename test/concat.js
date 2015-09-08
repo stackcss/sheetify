@@ -1,9 +1,9 @@
-var exec = require('child_process').exec
-var test = require('tape')
-var fs = require('fs')
+const exec = require('child_process').exec
+const test = require('tape')
+const fs = require('fs')
 
-var BIN = require.resolve('../bin/cli.js')
-var expected = fs.readFileSync(__dirname + '/concat-expected.css', 'utf8')
+const BIN = require.resolve('../bin/cli.js')
+const expected = fs.readFileSync(__dirname + '/concat-expected.css', 'utf8')
 
 test('works', function (t) {
   t.plan(2)
