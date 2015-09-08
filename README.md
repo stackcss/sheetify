@@ -43,5 +43,25 @@ bundler.bundle((err, res) => {
 })
 ```
 
+## Options
+### transform
+[tbi]
+
+### modifier
+[tbi]
+
+### compress
+[tbi]
+
+### debug
+[tbi]
+
+## API
+### bundler = sheetify(entry)
+[tbi]
+
+### bundler.bundle(cb(err, res))
+[tbi]
+
 # License
 MIT
