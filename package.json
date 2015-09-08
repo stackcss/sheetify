@@ -5,6 +5,7 @@
   "scripts": {
     "deps": "dependency-check . && dependency-check . --extra --no-dev",
     "test": "standard && npm run deps && faucet test/*.js",
+    "test:cov": "standard && npm run deps && NODE_ENV=test istanbul cover test.js",
     "format": "standard --format"
   },
   "bin": {
@@ -28,6 +29,7 @@
   "devDependencies": {
     "dependency-check": "^2.5.0",
     "faucet": "^0.0.1",
+    "istanbul": "^0.3.19",
     "standard": "^5.2.1",
     "tape": "^2.4.2",
     "wrap-selectors": "^0.1.0"
