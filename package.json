@@ -19,6 +19,8 @@
   ],
   "license": "MIT",
   "dependencies": {
+    "cliclopts": "^1.1.1",
+    "minimist": "^1.2.0",
     "once": "^1.3.0",
     "style-deps": "^2.0.1",
     "style-resolve": "0.0.0",
