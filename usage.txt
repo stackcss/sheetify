@@ -1,12 +1,19 @@
+sheetify - Modular CSS bundler
 
-Usage:
-
-  $0 [entry file] {OPTIONS}
+Usage: sheetify [options] [entry file]
 
 Options:
+  -h, --help        Output usage information
+  -v, --version     Output version number
+  -t, --transform   Include a sheetify transform
+  -m, --modifier    Include a sheetify modifier
+  -c, --compress    Compress final output
+  -d, --debug       Inline CSS sourcemaps
 
-  --transform, -t  Include a sheetify transform.
-   --compress, -c  Compress final output.
-    --version, -v  Output version information and quit.
-      --debug, -d  Inline CSS sourcemaps to final output.
+Examples:
+  $ sheetify index.css > bundle.css   # Bundle index.css to bundle.css
+  $ sheetify -c index.css             # Bundle and compress index.css
+  $ sheetify -d index.css             # Bundle index.css with sourcemaps
 
+Docs: https://github.com/sheetify/sheetify
+Bugs: https://github.com/sheetify/sheetify/issues
