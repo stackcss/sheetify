@@ -1,42 +1,36 @@
 var styledeps = require('style-deps')
-var resolve = require('style-resolve')
+var assert = require('assert')
 var xtend = require('xtend')
 
 module.exports = Sheetify
 
-// for now, stylify has no "core"
-// modules.
-var core = {}
-
-function Sheetify(entry) {
+function Sheetify (entry) {
   if (!(this instanceof Sheetify)) return new Sheetify(entry)
-  if (Array.isArray(entry) && entry.length > 1) throw new Error(
-    'Support for more than one entry css file ' +
-    'is not currently available.'
-  )
+  assert.equal(typeof entry, 'string')
 
   this.transforms = []
-
-  this.entry = Array.isArray(entry)
-    ? entry[0]
-    : entry
+  this.entry = entry
 
   return this
 }
 
-Sheetify.prototype.transform = function(transform) {
+Sheetify.prototype.transform = function (transform) {
   this.transforms.push(transform)
   return this
 }
 
-Sheetify.prototype.bundle = function(opts, done) {
-  if (typeof opts === 'function') {
+Sheetify.prototype.bundle = function (opts, done) {
+  if (!done) {
     done = opts
     opts = {}
   }
+  assert.equal(typeof opts, 'object')
+  assert.equal(typeof done, 'function')
 
-  return styledeps(this.entry, xtend(opts || {}, {
-      transforms: this.transforms
-    , modifiers: this.modifiers
-  }), done)
+  const base = {
+    transforms: this.transforms,
+    modifiers: this.modifiers
+  }
+
+  return styledeps(this.entry, xtend(opts, base), done)
 }
