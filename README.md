@@ -6,6 +6,7 @@ __Features__
 - source map support
 - minification
 - rich plugin ecosystem
+- streaming interface
 - easily extensible
 
 ## Usage
