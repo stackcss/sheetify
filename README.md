@@ -34,13 +34,13 @@ Bugs: https://github.com/sheetify/sheetify/issues
 ```
 
 __api__
-```txt
+```js
 const sheetify = require('sheetify')
 
 const bundler = sheetify('./index.css')
 bundler.bundle((err, res) => {
   if (err) return console.error(err)
-  constole.log(res)
+  console.log(res)
 })
 ```
 
