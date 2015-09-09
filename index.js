@@ -1,6 +1,7 @@
 const styledeps = require('style-deps')
 const assert = require('assert')
 const xtend = require('xtend')
+const noop = require('noop2')
 
 module.exports = Sheetify
 
@@ -24,6 +25,7 @@ Sheetify.prototype.bundle = function (opts, done) {
     done = opts
     opts = {}
   }
+  done = done || noop
   assert.equal(typeof opts, 'object')
   assert.equal(typeof done, 'function')
 
