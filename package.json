@@ -4,6 +4,8 @@
   "description": "Modular CSS bundler",
   "scripts": {
     "deps": "dependency-check . && dependency-check . --extra --no-dev",
+    "deps:pkg": "ncu",
+    "deps:update": "ncu -a",
     "test": "standard && npm run deps && faucet test/*.js",
     "test:cov": "standard && npm run deps && NODE_ENV=test istanbul cover test/index.js",
     "format": "standard --format"
@@ -32,6 +34,7 @@
     "dependency-check": "^2.5.0",
     "faucet": "^0.0.1",
     "istanbul": "^0.3.19",
+    "npm-check-updates": "^2.2.0",
     "standard": "^5.2.1",
     "tape": "^4.2.0",
     "through2": "^2.0.0",
