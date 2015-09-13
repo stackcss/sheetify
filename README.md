@@ -1,4 +1,11 @@
 # sheetify
+<img
+  alt="sheetify logo"
+  height="100"
+  style="max-width: 100%"
+  data-canonical-src="https://github.com/sheetify/logo"
+  src="https://raw.githubusercontent.com/sheetify/logo/master/512v6.png">
+
 [![NPM version][npm-image]][npm-url]
 [![build status][travis-image]][travis-url]
 [![Test coverage][codecov-image]][codecov-url]
