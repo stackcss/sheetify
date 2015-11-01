@@ -1,58 +1,31 @@
-const concat = require('concat-stream')
-const wrap = require('wrap-selectors')
+const sheetify = require('../')
+const xtend = require('xtend')
 const test = require('tape')
+const path = require('path')
 const fs = require('fs')
 
-require('./concat')
+test('basic prefixing', compare('./index.css', 'index-out.css'))
+test('basic prefixing', compare('./transformed.css', 'transformed-out.css', {
+  use: [
+    ['sheetify-cssnext', { sourcemap: false }]
+  ]
+}))
 
-const sheetify = require('..')
+function compare (inputFile, expectedFile, opts) {
+  opts = xtend({
+    basedir: path.join(__dirname, 'fixtures')
+  }, opts || {})
 
-test('basic', function (t) {
-  t.plan(2)
-  const expects = fs.readFileSync(__dirname + '/fixtures/basic-expected.css')
-  const bundler = sheetify(__dirname + '/fixtures/basic.css')
+  return function compareTest (t) {
+    const route = path.join(__dirname, 'fixtures', expectedFile)
+    const expected = fs.readFileSync(route, 'utf8')
 
-  bundler.transform(function (file) {
-    return function (ast, next) {
-      next(null, wrap()(ast))
-    }
-  })
+    t.plan(1)
 
-  bundler.bundle(function (err, output) {
-    t.ifError(err, 'bundled without error')
-    t.equal(String(expects).trim(), output.trim(), 'expected output')
-  })
-})
+    sheetify(inputFile, opts, function (err, actual) {
+      if (err) return t.error(err, 'no error')
 
-test('stream', function (t) {
-  t.plan(1)
-  const expects = fs.readFileSync(__dirname + '/fixtures/basic-expected.css')
-  const bundler = sheetify(__dirname + '/fixtures/basic.css')
-
-  bundler.transform(function (file) {
-    return function (ast, next) {
-      next(null, wrap()(ast))
-    }
-  })
-
-  bundler.bundle().pipe(concat(function (css) {
-    t.equal(expects.toString().trim(), css.toString().trim())
-  }))
-})
-
-test('imports', function (t) {
-  t.plan(2)
-  const expects = fs.readFileSync(__dirname + '/fixtures/imports-expected.css')
-  const bundler = sheetify(__dirname + '/fixtures/imports.css')
-
-  bundler.transform(function (file) {
-    return function (ast, next) {
-      next(null, wrap()(ast))
-    }
-  })
-
-  bundler.bundle(function (err, output) {
-    t.ifError(err, 'bundled without error')
-    t.equal(String(expects).trim(), output.trim(), 'expected output')
-  })
-})
+      t.equal(actual, expected, 'output is as expected')
+    })
+  }
+}

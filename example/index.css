@@ -1,15 +1,3 @@
-@import ./clearfix;
-@import ./typography;
-
-body, html {
-  margin: 0;
-  background: #000;
-}
-
-html {
-  padding: 0;
-}
-
-body {
-  padding: 2em;
+h1 {
+  text-align: center;
 }

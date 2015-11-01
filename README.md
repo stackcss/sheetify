@@ -16,62 +16,61 @@ Modular CSS bundler. Works with [npm](http://npmjs.org/) modules like
 [browserify](http://browserify.org/) does.
 
 __Features__
-- source map support
-- minification
 - rich plugin ecosystem
-- streaming interface
-- easily extensible
+- CSS namespacing in modules using Browserify
+- tiny API surface
+- [WIP] works with LESS, SASS and regular CSS (CSS only right now)
+- [WIP] pass global variables into packages
 
-## Usage
-__cli__
-```txt
-sheetify - Modular CSS bundler
-
-Usage: sheetify [options] [entry file]
-
-Options:
-  -h, --help        Output usage information
-  -v, --version     Output version number
-  -t, --transform   Include a sheetify transform
-  -m, --modifier    Include a sheetify modifier
-  -c, --compress    Compress final output
-  -d, --debug       Inline CSS sourcemaps
-
-Examples:
-  $ sheetify index.css > bundle.css   # Bundle index.css to bundle.css
-  $ sheetify -cd index.css            # Compress and include source maps
-
-Docs: https://github.com/sheetify/sheetify
-Bugs: https://github.com/sheetify/sheetify/issues
-```
-
-__api__
+## As a standalone package
+__js api__
 ```js
 const sheetify = require('sheetify')
+const path = require('path')
 
-const bundler = sheetify('./index.css')
-bundler.bundle().pipe(process.stdout)
+const opts = {
+  use: [ [ 'sheetify-cssnext', { sourcemap: false } ] ],
+  basedir: __dirname
+}
+
+sheetify(path.join(__dirname, 'index.css'), opts, function (err, css) {
+  if (err) throw err
+  console.log(css)
+})
 ```
 
-## Options
-### transform
-[tbi]
+## As a browserify transform
+__js api__
+```js
+const browserify = require('browserify')
+const path = require('path')
 
-### modifier
-[tbi]
+browserify(path.join(__dirname, './index.js'))
+  .transform('sheetify/transform')
+  .bundle()
+  .pipe(process.stdout)
+```
 
-### compress
-[tbi]
+__package.json transform__
+```json
+{
+  "name": "my-app",
+  "browserify":{
+    "transform": [
+      "sheetify/transform"
+    ]
+  }
+}
+```
 
-### debug
-[tbi]
+__cli__
+```sh
+$ browserity -t sheetify/transform index.js > bundle.js
+```
 
-## API
-### bundler = sheetify(entry)
-[tbi]
-
-### bundler.bundle(cb(err, res))
-[tbi]
+## Plugins
+- [sheetify-cssnext](https://github.com/sheetify/sheetify-cssnext) cssnext
+  plugin for sheetify
 
 ## License
 [MIT](https://tldrlegal.com/license/mit-license)

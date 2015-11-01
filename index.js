@@ -1,38 +1,80 @@
-const styledeps = require('style-deps')
-const assert = require('assert')
-const xtend = require('xtend')
-const noop = require('noop2')
+const prefix = require('postcss-prefix')
+const resolve = require('style-resolve')
+const nodeResolve = require('resolve')
+const mapLimit = require('map-limit')
+const postcss = require('postcss')
+const crypto = require('crypto')
+const fs = require('fs')
 
-module.exports = Sheetify
+module.exports = sheetify
 
-function Sheetify (entry) {
-  if (!(this instanceof Sheetify)) return new Sheetify(entry)
-  assert.equal(typeof entry, 'string')
-
-  this.transforms = []
-  this.entry = entry
-
-  return this
-}
-
-Sheetify.prototype.transform = function (transform) {
-  this.transforms.push(transform)
-  return this
-}
-
-Sheetify.prototype.bundle = function (opts, done) {
-  if (!done) {
-    done = opts
-    opts = {}
-  }
-  done = done || noop
-  assert.equal(typeof opts, 'object')
-  assert.equal(typeof done, 'function')
-
-  const base = {
-    transforms: this.transforms,
-    modifiers: this.modifiers
+function sheetify (filename, options, done) {
+  if (typeof options === 'function') {
+    done = options
+    options = {}
   }
 
-  return styledeps(this.entry, xtend(opts, base), done)
+  done = done || throwop
+  options = options || {}
+
+  filename = resolve.sync(filename, {
+    basedir: options.basedir || process.cwd()
+  })
+
+  var src = fs.readFileSync(filename)
+  var id = crypto.createHash('md5')
+    .update(src)
+    .digest('hex')
+    .slice(0, 8)
+
+  src = postcss()
+    .use(prefix('.' + id + ' '))
+    .process(src.toString())
+    .toString()
+
+  transform(filename, src, options, function (err, src) {
+    return done(err, src, id)
+  })
+
+  return id
+}
+
+function throwop (err) {
+  if (err) throw err
+}
+
+function transform (filename, src, options, done) {
+  var use = options.use || []
+  use = Array.isArray(use) ? use.slice() : [use]
+
+  mapLimit(use, 1, iterate, function (err) {
+    if (err) return done(err)
+    done(null, src)
+  })
+
+  function iterate (plugin, next) {
+    if (typeof plugin === 'string') {
+      plugin = [plugin, {}]
+    } else
+    if (!Array.isArray(plugin)) {
+      return done(new Error('Plugin must be a string or array'))
+    }
+
+    const name = plugin[0]
+    const opts = plugin[1]
+
+    nodeResolve(name, {
+      basedir: opts.basedir || options.basedir
+    }, function (err, transformPath) {
+      if (err) return done(err)
+
+      const transform = require(transformPath)
+
+      transform(filename, src, opts, function (err, result) {
+        if (err) return next(err)
+        src = result
+        next()
+      })
+    })
+  }
 }
