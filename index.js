@@ -22,7 +22,7 @@ function sheetify (filename, options, done) {
   })
 
   var src = fs.readFileSync(filename)
-  var id = crypto.createHash('md5')
+  var id = '_' + crypto.createHash('md5')
     .update(src)
     .digest('hex')
     .slice(0, 8)
