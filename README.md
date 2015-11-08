@@ -17,7 +17,7 @@ Modular CSS bundler. Works with [npm](http://npmjs.org/) modules like
 
 __Features__
 - rich plugin ecosystem
-- CSS namespacing in modules using Browserify
+- namespaced CSS modules using browserify
 - tiny API surface
 - [WIP] works with LESS, SASS and regular CSS (CSS only right now)
 - [WIP] pass global variables into packages
@@ -37,6 +37,24 @@ sheetify(path.join(__dirname, 'index.css'), opts, function (err, css) {
   if (err) throw err
   console.log(css)
 })
+```
+
+__cli api__
+```sh
+Usage: sheetify [options] <target>
+
+Options:
+  -h, --help        Output usage information
+  -v, --version     Output version number
+  -u, --use         Use a sheetify transform
+  -b, --basedir     Set the project base directory
+
+Examples:
+  $ sheetify index.js > bundle.css          # Bundle CSS to a file
+  $ sheetify -u sheetify-cssnext index.js   # Use a transform
+
+Docs: https://github.com/sheetify/sheetify
+Bugs: https://github.com/sheetify/sheetify/issues
 ```
 
 ## As a browserify transform

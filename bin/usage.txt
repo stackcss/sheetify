@@ -1,0 +1,14 @@
+Usage: sheetify [options] <target>
+
+Options:
+  -h, --help        Output usage information
+  -v, --version     Output version number
+  -u, --use         Use a sheetify transform
+  -b, --basedir     Set the project base directory
+
+Examples:
+  $ sheetify index.js > bundle.css          # Bundle CSS to a file
+  $ sheetify -u sheetify-cssnext index.js   # Use a transform
+
+Docs: https://github.com/sheetify/sheetify
+Bugs: https://github.com/sheetify/sheetify/issues
