@@ -1,31 +1,51 @@
-const sheetify = require('../')
-const xtend = require('xtend')
+const concat = require('concat-stream')
 const test = require('tape')
 const path = require('path')
 const fs = require('fs')
 
-test('basic prefixing', compare('./index.css', 'index-out.css'))
-test('basic prefixing', compare('./transformed.css', 'transformed-out.css', {
-  use: [
-    ['sheetify-cssnext', { sourcemap: false }]
-  ]
-}))
+const sheetify = require('../')
 
-function compare (inputFile, expectedFile, opts) {
-  opts = xtend({
-    basedir: path.join(__dirname, 'fixtures')
-  }, opts || {})
+test('should do basic prefixing', function (t) {
+  t.plan(2)
 
-  return function compareTest (t) {
-    const route = path.join(__dirname, 'fixtures', expectedFile)
-    const expected = fs.readFileSync(route, 'utf8')
+  const route = path.join(__dirname, 'fixtures', 'index-out.css')
+  const expected = fs.readFileSync(route, 'utf8')
+  const opts = { basedir: path.join(__dirname, 'fixtures') }
 
-    t.plan(1)
+  const inFile = path.join(__dirname, 'fixtures', 'index.css')
+  sheetify(inFile, opts, function (err, actual) {
+    t.error(err, 'no error')
+    t.equal(actual, expected, 'output is as expected')
+  })
+})
 
-    sheetify(inputFile, opts, function (err, actual) {
-      if (err) return t.error(err, 'no error')
+test('should use plugins', function (t) {
+  t.plan(2)
 
-      t.equal(actual, expected, 'output is as expected')
-    })
+  const route = path.join(__dirname, 'fixtures', 'transformed-out.css')
+  const expected = fs.readFileSync(route, 'utf8')
+  const opts = {
+    basedir: path.join(__dirname, 'fixtures'),
+    use: [ ['sheetify-cssnext', { sourcemap: false }] ]
   }
-}
+
+  const inFile = path.join(__dirname, 'fixtures', 'transformed.css')
+  sheetify(inFile, opts, function (err, actual) {
+    t.error(err, 'no error')
+    t.equal(actual, expected, 'output is as expected')
+  })
+})
+
+test('should return a stream', function (t) {
+  t.plan(1)
+
+  const route = path.join(__dirname, 'fixtures', 'index-out.css')
+  const expected = fs.readFileSync(route, 'utf8')
+  const opts = { basedir: path.join(__dirname, 'fixtures') }
+
+  const inFile = path.join(__dirname, 'fixtures', 'index.css')
+  sheetify(inFile, opts).pipe(concat(function (buf) {
+    const str = String(buf)
+    t.equal(str, expected, 'output is as expected')
+  }))
+})
