@@ -33,10 +33,9 @@ const opts = {
   basedir: __dirname
 }
 
-sheetify(path.join(__dirname, 'index.css'), opts, function (err, css) {
-  if (err) throw err
-  console.log(css)
-})
+sheetify(path.join(__dirname, 'index.css'), opts)
+  .on('error', err => console.log(err))
+  .pipe(process.stdout)
 ```
 
 ## As a browserify transform
