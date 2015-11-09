@@ -1,6 +1,6 @@
 {
   "name": "sheetify",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Modular CSS bundler",
   "scripts": {
     "test": "standard && node test",
