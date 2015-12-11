@@ -1,8 +1,11 @@
-const sheetify = require('../')
+const concat = require('concat-stream')
 const xtend = require('xtend')
 const test = require('tape')
 const path = require('path')
 const fs = require('fs')
+
+const sheetifyStream = require('../stream')
+const sheetify = require('../')
 
 test('basic prefixing', compare('./index.css', 'index-out.css'))
 test('basic prefixing', compare('./transformed.css', 'transformed-out.css', {
@@ -10,6 +13,18 @@ test('basic prefixing', compare('./transformed.css', 'transformed-out.css', {
     ['sheetify-cssnext', { sourcemap: false }]
   ]
 }))
+
+test('sheetify stream', function (t) {
+  t.plan(1)
+  const dir = path.join(__dirname, 'fixtures')
+  const opts = { basedir: dir }
+  sheetifyStream('./index.css', opts)
+    .pipe(concat(function (buf) {
+      const css = String(buf)
+      const expected = fs.readFileSync(path.join(dir, 'index-out.css'), 'utf8')
+      t.equal(css, expected, 'output is equal')
+    }))
+})
 
 function compare (inputFile, expectedFile, opts) {
   opts = xtend({

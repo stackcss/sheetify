@@ -22,6 +22,11 @@ __Features__
 - [WIP] works with LESS, SASS and regular CSS (CSS only right now)
 - [WIP] pass global variables into packages
 
+## Installation
+```sh
+$ npm install sheetify
+```
+
 ## As a standalone package
 __js api__
 ```js
@@ -37,6 +42,20 @@ sheetify(path.join(__dirname, 'index.css'), opts, function (err, css) {
   if (err) throw err
   console.log(css)
 })
+```
+
+__js stream api__
+```js
+const sheetify = require('sheetify/stream')
+const path = require('path')
+
+const opts = {
+  use: [ [ 'sheetify-cssnext', { sourcemap: false } ] ],
+  basedir: __dirname
+}
+
+sheetify(path.join(__dirname, 'index.css'), opts)
+  .pipe(process.stdout)
 ```
 
 __cli api__
