@@ -74,6 +74,9 @@ function transform (filename, options) {
           : {}
 
         opts.basedir = opts.basedir || path.dirname(filename)
+        opts.use = []
+          .concat(opts.use || [])
+          .concat(options.use || [])
 
         sheetify(sourceFile, opts, function (err, style, uuid) {
           if (err) return next(err)
