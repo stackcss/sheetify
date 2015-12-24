@@ -20,7 +20,6 @@ function sheetifyStream (path, opts) {
 
       const rs = new stream.Readable({
         read: function (n) {
-          console.log('reading')
           if (i >= ln) return this.push(null)
           this.push(css.slice(i, n))
           i += n
