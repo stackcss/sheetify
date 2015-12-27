@@ -7,6 +7,7 @@ const babylon = require('babylon')
 const sleuth = require('sleuth')
 const sheetify = require('./')
 const path = require('path')
+const fs = require('fs')
 
 module.exports = transform
 
@@ -95,49 +96,58 @@ function transform (filename, options) {
     }, function (err, styles) {
       if (err) return stream.emit('error', err)
 
-      const relative = getRequirePath(filename)
-      const req = path.join(relative, 'insert-css')
+      getRequirePath(filename, function (err, requirePath) {
+        if (err) return stream.emit('error', err)
 
-      styles = styles.join('\n')
+        const req = path.join(requirePath, 'insert-css')
 
-      ast.program.body.unshift({
-        type: 'ExpressionStatement',
-        expression: {
-          type: 'CallExpression',
-          callee: {
+        styles = styles.join('\n')
+
+        ast.program.body.unshift({
+          type: 'ExpressionStatement',
+          expression: {
             type: 'CallExpression',
             callee: {
-              type: 'Identifier',
-              name: 'require'
+              type: 'CallExpression',
+              callee: {
+                type: 'Identifier',
+                name: 'require'
+              },
+              arguments: [
+                {
+                  type: 'Literal',
+                  value: req,
+                  rawValue: req,
+                  raw: JSON.stringify(req)
+                }
+              ]
             },
             arguments: [
               {
                 type: 'Literal',
-                value: req,
-                rawValue: req,
-                raw: JSON.stringify(req)
+                value: styles,
+                rawValue: styles,
+                raw: JSON.stringify(styles)
               }
             ]
-          },
-          arguments: [
-            {
-              type: 'Literal',
-              value: styles,
-              rawValue: styles,
-              raw: JSON.stringify(styles)
-            }
-          ]
-        }
-      })
+          }
+        })
 
-      stream.push(escodegen.generate(ast.program))
-      stream.push(null)
+        stream.push(escodegen.generate(ast.program))
+        stream.push(null)
+      })
     })
   }
 }
 
-function getRequirePath (filename) {
-  return path.relative(path.dirname(filename), path.dirname(__filename))
+function getRequirePath (filename, callback) {
+  fs.realpath(filename, function (err, realname) {
+    if (err) { return callback(err) }
+    const relative = path.relative(
+      path.dirname(realname), path.dirname(__filename)
+    )
+    callback(null, relative)
+  })
 }
 
 // doesn't currently handle inline requires, i.e.
