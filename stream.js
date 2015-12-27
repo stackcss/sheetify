@@ -21,7 +21,7 @@ function sheetifyStream (path, opts) {
   // force async to prevent weird race conditions
   process.nextTick(function () {
     sheetify(path, opts, function (err, css) {
-      if (err) return rs.emit('error', err)
+      if (err) return pts.emit('error', err)
 
       const ln = css.length
       var i = 0
