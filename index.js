@@ -1,86 +1,84 @@
-const prefix = require('postcss-prefix')
-const resolve = require('style-resolve')
+const cssPrefix = require('postcss-prefix')
 const nodeResolve = require('resolve')
 const mapLimit = require('map-limit')
 const postcss = require('postcss')
+const assert = require('assert')
 const crypto = require('crypto')
-const fs = require('fs')
-const callerPath = require('caller-path')
-const path = require('path')
 
 module.exports = sheetify
 
-function sheetify (filename, options, done) {
-  if (typeof options === 'function') {
-    done = options
-    options = {}
-  }
+// transform css
+// (str, str, obj?, fn) -> str
+function sheetify (src, filename, options, push) {
+  // handle tagged template calls directly from Node
+  if (Array.isArray(src)) src = src.join('')
+  assert.equal(typeof src, 'string', 'src must be a string')
 
-  done = done || throwop
-  options = options || {}
-
-  // default basedir option to
-  // path of module that called this module
-  options.basedir = options.basedir || path.dirname(callerPath())
-
-  filename = resolve.sync(filename, {
-    basedir: options.basedir
-  })
-
-  var src = fs.readFileSync(filename)
-  var id = '_' + crypto.createHash('md5')
+  const prefix = '_' + crypto.createHash('md5')
     .update(src)
     .digest('hex')
     .slice(0, 8)
 
-  src = postcss()
-    .use(prefix('.' + id))
+  // only parse if in a browserify transform
+  if (filename) parseCss(src, filename, prefix, options, push)
+
+  return prefix
+}
+
+// parse css
+// (str, str, str, obj, fn) -> null
+function parseCss (src, filename, prefix, options, next) {
+  assert.equal(typeof filename, 'string', 'filename must be a string')
+  assert.equal(typeof prefix, 'string', 'prefix must be a string')
+  assert.equal(typeof options, 'object', 'options must be a object')
+  assert.equal(typeof next, 'function', 'done must be a function')
+
+  const processedCss = postcss()
+    .use(cssPrefix('.' + prefix))
     .process(src.toString())
     .toString()
 
-  transform(filename, src, options, function (err, src) {
-    return done(err, src, id)
-  })
-
-  return id
-}
-
-function throwop (err) {
-  if (err) throw err
-}
-
-function transform (filename, src, options, done) {
-  var use = options.use || []
-  use = Array.isArray(use) ? use.slice() : [use]
-
-  mapLimit(use, 1, iterate, function (err) {
-    if (err) return done(err)
-    done(null, src)
-  })
-
-  function iterate (plugin, next) {
-    if (typeof plugin === 'string') {
-      plugin = [plugin, {}]
-    } else
-    if (!Array.isArray(plugin)) {
-      return done(new Error('Plugin must be a string or array'))
-    }
-
-    const name = plugin[0]
-    const opts = plugin[1] || {}
-
-    nodeResolve(name, {
-      basedir: opts.basedir || options.basedir
-    }, function (err, transformPath) {
-      if (err) return done(err)
-
-      const transform = require(transformPath)
-
-      transform(filename, src, opts, function (err, result) {
-        if (err) return next(err)
-        src = result
-        next()
-      })
+  next(function (done) {
+    applyTransforms(filename, processedCss, options, function (err, css) {
+      return done(err, css, prefix)
     })
+  })
+
+  // apply transforms to a string of css,
+  // one at the time
+  // (str, str, obj, fn) -> null
+  function applyTransforms (filename, src, options, done) {
+    var use = options.use || []
+    use = Array.isArray(use) ? use.slice() : [ use ]
+
+    mapLimit(use, 1, iterate, function (err) {
+      if (err) return done(err)
+      done(null, src)
+    })
+
+    // find and apply a transform to a string of css
+    // (fn, fn) -> null
+    function iterate (plugin, next) {
+      if (typeof plugin === 'string') {
+        plugin = [ plugin, {} ]
+      } else if (!Array.isArray(plugin)) {
+        return done(new Error('Plugin must be a string or array'))
+      }
+
+      const name = plugin[0]
+      const opts = plugin[1] || {}
+
+      const resolveOpts = { basedir: opts.basedir || options.basedir }
+      nodeResolve(name, resolveOpts, function (err, transformPath) {
+        if (err) return done(err)
+
+        const transform = require(transformPath)
+        transform(filename, src, opts, function (err, result) {
+          if (err) return next(err)
+          src = result
+          next()
+        })
+      })
+    }
   }
 }
