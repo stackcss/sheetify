@@ -5,6 +5,8 @@ const mapLimit = require('map-limit')
 const postcss = require('postcss')
 const crypto = require('crypto')
 const fs = require('fs')
+const callerPath = require('caller-path')
+const path = require('path')
 
 module.exports = sheetify
 
@@ -17,8 +19,12 @@ function sheetify (filename, options, done) {
   done = done || throwop
   options = options || {}
 
+  // default basedir option to
+  // path of module that called this module
+  options.basedir = options.basedir || path.dirname(callerPath())
+
   filename = resolve.sync(filename, {
-    basedir: options.basedir || process.cwd()
+    basedir: options.basedir
   })
 
   var src = fs.readFileSync(filename)

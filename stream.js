@@ -1,5 +1,7 @@
 const stream = require('readable-stream')
 const pump = require('pump')
+const callerPath = require('caller-path')
+const dirname = require('path').dirname
 
 const sheetify = require('./')
 
@@ -8,6 +10,12 @@ module.exports = sheetifyStream
 // return a sheetify stream
 // (str, obj) -> rstream
 function sheetifyStream (path, opts) {
+  opts = opts || {}
+
+  // default basedir option to
+  // path of module that called this module
+  opts.basedir = opts.basedir || dirname(callerPath())
+
   const pts = new stream.PassThrough()
 
   // force async to prevent weird race conditions

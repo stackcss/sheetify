@@ -19,6 +19,7 @@
   "dependencies": {
     "astw-babylon": "^1.0.0",
     "babylon": "^5.8.23",
+    "caller-path": "^0.1.0",
     "cliclopts": "^1.1.1",
     "css-prefix": "0.0.2",
     "domify": "^1.4.0",
