@@ -67,7 +67,7 @@ function transform (filename, src, options, done) {
     }
 
     const name = plugin[0]
-    const opts = plugin[1]
+    const opts = plugin[1] || {}
 
     nodeResolve(name, {
       basedir: opts.basedir || options.basedir
