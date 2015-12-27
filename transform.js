@@ -1,142 +1,65 @@
-const staticEval = require('static-eval')
-const escodegen = require('escodegen')
-const mapLimit = require('map-limit')
-const astw = require('astw-babylon')
-const through = require('through2')
-const babylon = require('babylon')
-const sleuth = require('sleuth')
+const staticModule = require('static-module')
+const stream = require('readable-stream')
 const sheetify = require('./')
 const path = require('path')
 const fs = require('fs')
+const resolve = require('resolve')
+const pump = require('pump')
+const fromString = require('from2-string')
 
 module.exports = transform
 
 function transform (filename, options) {
-  const buffer = []
-
-  return through(write, flush)
-
-  function write (chunk, _, next) {
-    buffer.push(chunk)
-    next()
+  const basedir = path.dirname(filename)
+  const vars = {
+    __filename: filename,
+    __dirname: basedir,
+    require: { resolve: resolver }
   }
 
-  function flush () {
-    const stream = this
-    const src = buffer.join('')
-    const ast = babylon.parse(src, {
-      allowImportExportEverywhere: true,
-      allowReturnOutsideFunction: true,
-      allowHashBang: true,
-      ecmaVersion: 6,
-      strictMode: false,
-      sourceType: 'module',
-      features: {},
-      plugins: {
-        jsx: true,
-        flow: true
-      }
+  options = options || {}
+  if (options.vars) {
+    Object.keys(options.vars).forEach(function (key) {
+      vars[key] = options.vars[key]
     })
+  }
 
-    const requires = sleuth(ast.program)
-    const walk = astw(ast)
-    const context = {
-      __dirname: path.dirname(filename),
-      __filename: filename
-    }
+  const sm = staticModule(
+    { sheetify: staticSheetify },
+    { vars: vars, varModules: { path: path } }
+  )
 
-    const sheetifyNames = Object.keys(requires).filter(function (key) {
-      return requires[key] === 'sheetify'
-    })
+  return sm
 
-    if (!sheetifyNames.length) {
-      stream.push(src)
-      stream.push(null)
-      return
-    }
+  function staticSheetify (sheetFilename, sheetOptions) {
+    sheetOptions = sheetOptions || {}
+    sheetOptions.basedir = sheetOptions.basedir || basedir
 
-    filterRequires(ast.program, function (target) {
-      return target !== 'sheetify'
-    })
+    const pts = stream.PassThrough()
 
-    mapLimit(sheetifyNames, 1, function (varname, next) {
-      walk(function (node) {
-        if (node.name !== varname) return
-        if (node.type !== 'Identifier') return
-        if (node.parent.type !== 'CallExpression') return
+    getRequirePath(filename, function (err, requirePath) {
+      if (err) { return sm.emit('error', err) }
 
-        const args = node.parent.arguments.map(function (node) {
-          return staticEval(node, context)
-        })
+      sheetify(sheetFilename, sheetOptions, function (err, css, uuid) {
+        if (err) { return sm.emit('error', err) }
 
-        const sourceFile = args[0]
-        const opts = typeof args[1] === 'object'
-          ? args[1]
-          : {}
-
-        opts.basedir = opts.basedir || path.dirname(filename)
-        opts.use = []
-          .concat(opts.use || [])
-          .concat(options.use || [])
-
-        sheetify(sourceFile, opts, function (err, style, uuid) {
-          if (err) return next(err)
-
-          const parent = node.parent
-
-          parent.type = 'Literal'
-          parent.value = uuid
-          parent.raw = JSON.stringify(parent.value)
-          delete parent.arguments
-          delete parent.name
-
-          next(null, style)
-        })
-      })
-    }, function (err, styles) {
-      if (err) return stream.emit('error', err)
-
-      getRequirePath(filename, function (err, requirePath) {
-        if (err) return stream.emit('error', err)
-
-        const req = path.join(requirePath, 'insert-css')
-
-        styles = styles.join('\n')
-
-        ast.program.body.unshift({
-          type: 'ExpressionStatement',
-          expression: {
-            type: 'CallExpression',
-            callee: {
-              type: 'CallExpression',
-              callee: {
-                type: 'Identifier',
-                name: 'require'
-              },
-              arguments: [
-                {
-                  type: 'Literal',
-                  value: req,
-                  rawValue: req,
-                  raw: JSON.stringify(req)
-                }
-              ]
-            },
-            arguments: [
-              {
-                type: 'Literal',
-                value: styles,
-                rawValue: styles,
-                raw: JSON.stringify(styles)
-              }
-            ]
-          }
-        })
-
-        stream.push(escodegen.generate(ast.program))
-        stream.push(null)
+        const insertCssRequirePath = path.join(requirePath, 'insert-css')
+        const sheetStream = fromString(`(
+           require(
+             ${JSON.stringify(insertCssRequirePath)}
+           )(${JSON.stringify(css)})
+           || true && ${JSON.stringify(uuid)}
+        )`)
+        pump(sheetStream, pts)
+        sm.emit('file', path.join(basedir, sheetFilename))
       })
     })
+
+    return pts
+  }
+
+  function resolver (p) {
+    return resolve.sync(p, { basedir: path.dirname(filename) })
   }
 }
 
@@ -148,26 +71,4 @@ function getRequirePath (filename, callback) {
     )
     callback(null, relative)
   })
-}
-
-// doesn't currently handle inline requires, i.e.
-// require('sheetify')('./index.css')
-function filterRequires (program, filter) {
-  program.body = program.body.filter(function (node) {
-    if (node.type !== 'VariableDeclaration') return true
-
-    const decl = node.declarations
-
-    for (var i = 0; i < decl.length; i++) {
-      if (decl[i].init.type !== 'CallExpression') continue
-      if (decl[i].init.callee.name !== 'require') continue
-      var args = decl[i].init.arguments
-      if (filter(args[0].value)) continue
-      decl.splice(i--, 1)
-    }
-
-    return decl.length
-  })
-
-  return program.body
 }
