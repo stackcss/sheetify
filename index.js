@@ -28,7 +28,7 @@ function sheetify (filename, options, done) {
     .slice(0, 8)
 
   src = postcss()
-    .use(prefix('.' + id + ' '))
+    .use(prefix('.' + id))
     .process(src.toString())
     .toString()
 
