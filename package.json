@@ -43,7 +43,6 @@
     "uuid": "^2.0.1"
   },
   "devDependencies": {
-    "concat-stream": "^1.5.1",
     "istanbul": "^0.3.19",
     "npm-check-updates": "^2.2.0",
     "sheetify-cssnext": "^1.0.0",
@@ -52,8 +51,5 @@
     "through2": "^2.0.0",
     "wrap-selectors": "^0.1.0",
     "xtend": "^4.0.1"
-  },
-  "bin": {
-    "sheetify": "./bin/cli.js"
   }
 }
