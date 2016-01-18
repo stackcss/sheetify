@@ -37,22 +37,17 @@ function transform (filename, options) {
 
     const pts = stream.PassThrough()
 
-    getRequirePath(filename, function (err, requirePath) {
+    sheetify(sheetFilename, sheetOptions, function (err, css, uuid) {
       if (err) { return sm.emit('error', err) }
 
-      sheetify(sheetFilename, sheetOptions, function (err, css, uuid) {
-        if (err) { return sm.emit('error', err) }
-
-        const insertCssRequirePath = path.join(requirePath, 'insert-css')
-        const sheetStream = fromString(`(
-           require(
-             ${JSON.stringify(insertCssRequirePath)}
-           )(${JSON.stringify(css)})
-           || true && ${JSON.stringify(uuid)}
-        )`)
-        pump(sheetStream, pts)
-        sm.emit('file', path.join(basedir, sheetFilename))
-      })
+      const sheetStream = fromString([
+         "((require('insert-css')(" + JSON.stringify(css) + ")",
+         " || true) && ",
+         JSON.stringify(uuid),
+         ")"
+      ].join(''))
+      pump(sheetStream, pts)
+      sm.emit('file', path.join(basedir, sheetFilename))
     })
 
     return pts
@@ -61,14 +56,4 @@ function transform (filename, options) {
   function resolver (p) {
     return resolve.sync(p, { basedir: path.dirname(filename) })
   }
-}
-
-function getRequirePath (filename, callback) {
-  fs.realpath(filename, function (err, realname) {
-    if (err) { return callback(err) }
-    const relative = path.relative(
-      path.dirname(realname), path.dirname(__filename)
-    )
-    callback(null, relative)
-  })
 }
