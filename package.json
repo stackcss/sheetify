@@ -20,7 +20,6 @@
     "cliclopts": "^1.1.1",
     "domify": "^1.4.0",
     "from2-string": "^1.1.0",
-    "insert-css": "^0.2.0",
     "map-limit": "0.0.1",
     "minimist": "^1.2.0",
     "noop2": "^2.0.0",
@@ -35,6 +34,7 @@
   },
   "devDependencies": {
     "concat-stream": "^1.5.1",
+    "insert-css": "^0.2.0",
     "istanbul": "^0.3.19",
     "npm-check-updates": "^2.2.0",
     "sheetify-cssnext": "^1.0.0",
