@@ -15,68 +15,17 @@
 Modular CSS bundler. Works with [npm](http://npmjs.org/) modules like
 [browserify](http://browserify.org/) does.
 
-__Features__
+## Features
 - rich plugin ecosystem
 - namespaced CSS modules using browserify
 - tiny API surface
-- [WIP] works with LESS, SASS and regular CSS (CSS only right now)
-- [WIP] pass global variables into packages
 
 ## Installation
 ```sh
 $ npm install sheetify
 ```
 
-## As a standalone package
-__js api__
-```js
-const sheetify = require('sheetify')
-const path = require('path')
-
-const opts = {
-  use: [ [ 'sheetify-cssnext', { sourcemap: false } ] ],
-  basedir: __dirname
-}
-
-sheetify(path.join(__dirname, 'index.css'), opts, function (err, css) {
-  if (err) throw err
-  console.log(css)
-})
-```
-
-__js stream api__
-```js
-const sheetify = require('sheetify/stream')
-const path = require('path')
-
-const opts = {
-  use: [ [ 'sheetify-cssnext', { sourcemap: false } ] ],
-  basedir: __dirname
-}
-
-sheetify(path.join(__dirname, 'index.css'), opts)
-  .pipe(process.stdout)
-```
-
-__cli api__
-```sh
-Usage: sheetify [options] <target>
-
-Options:
-  -h, --help        Output usage information
-  -v, --version     Output version number
-  -u, --use         Use a sheetify transform
-  -b, --basedir     Set the project base directory
-
-Examples:
-  $ sheetify index.js > bundle.css          # Bundle CSS to a file
-  $ sheetify -u sheetify-cssnext index.js   # Use a transform
-
-Docs: https://github.com/sheetify/sheetify
-Bugs: https://github.com/sheetify/sheetify/issues
-```
-
-## As a browserify transform
+## Usage
 __js api__
 ```js
 const browserify = require('browserify')
