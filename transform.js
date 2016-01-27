@@ -2,7 +2,6 @@ const staticModule = require('static-module')
 const stream = require('readable-stream')
 const sheetify = require('./')
 const path = require('path')
-const fs = require('fs')
 const resolve = require('resolve')
 const pump = require('pump')
 const fromString = require('from2-string')
@@ -41,10 +40,10 @@ function transform (filename, options) {
       if (err) { return sm.emit('error', err) }
 
       const sheetStream = fromString([
-         "((require('insert-css')(" + JSON.stringify(css) + ")",
-         " || true) && ",
-         JSON.stringify(uuid),
-         ")"
+        "((require('insert-css')(" + JSON.stringify(css) + ')',
+        ' || true) && ',
+        JSON.stringify(uuid),
+        ')'
       ].join(''))
       pump(sheetStream, pts)
       sm.emit('file', path.join(basedir, sheetFilename))
