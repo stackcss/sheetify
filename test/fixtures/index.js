@@ -1,4 +1,4 @@
-const sheetify = require('sheetify')
+const sheetify = require('../../')
 const divStyle = sheetify('./index.css')
 
 module.exports = render
