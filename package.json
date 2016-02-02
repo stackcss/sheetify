@@ -3,8 +3,8 @@
   "version": "3.3.3",
   "description": "Modular CSS bundler",
   "scripts": {
-    "test": "standard && node test",
-    "test:cov": "standard && NODE_ENV=test istanbul cover test/index.js",
+    "test": "standard && tape test/*",
+    "test:cov": "standard && NODE_ENV=test istanbul cover test/*",
     "format": "standard --format"
   },
   "repository": "sheetify/sheetify",
