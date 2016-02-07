@@ -1,6 +1,8 @@
 const mapLimit = require('map-limit')
+const eos = require('end-of-stream')
 const through = require('through2')
 const falafel = require('falafel')
+const mkdirp = require('mkdirp')
 const path = require('path')
 const fs = require('fs')
 
@@ -21,6 +23,10 @@ function transform (filename, opts) {
   const nodes = []
   var mname = null
 
+  // argv parsing
+  if (opts.o) opts.out = opts.o
+  if (opts.out) opts.out = path.resolve(opts.out)
+
   return through(write, end)
 
   // aggregate all AST nodes
@@ -39,23 +45,38 @@ function transform (filename, opts) {
 
     // transform all detected nodes and
     // close stream when done
-    mapLimit(nodes, Infinity, iterate, function () {
+    mapLimit(nodes, Infinity, iterate, function (err) {
+      if (err) return this.emit('error', err)
       self.push(ast.toString())
       self.push(null)
     })
 
     // asynchronously update css and apply to node
+    // or exorcise to file
     function iterate (args, done) {
       const transform = args[0]
       const node = args[1]
       transform(function (err, css, prefix) {
         if (err) return done(err)
-        const str = [
-          "((require('insert-css')(" + JSON.stringify(css) + ')',
-          ' || true) && ' + JSON.stringify(prefix) + ')'
-        ].join('')
-        node.update(str)
-        done()
+        if (opts.out) {
+          // exorcise to external file
+          const dirname = path.dirname(opts.out)
+          mkdirp(dirname, function (err) {
+            if (err) return done(err)
+            const ws = fs.createWriteStream(opts.out)
+            eos(ws, done)
+            node.update('0')
+            ws.end(css)
+          })
+        } else {
+          // inject CSS inline
+          const str = [
+            "((require('insert-css')(" + JSON.stringify(css) + ')',
+            ' || true) && ' + JSON.stringify(prefix) + ')'
+          ].join('')
+          node.update(str)
+          done()
+        }
       })
     }
   }

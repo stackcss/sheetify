@@ -21,9 +21,11 @@
     "css-modules"
   ],
   "dependencies": {
+    "end-of-stream": "^1.1.0",
     "falafel": "^1.2.0",
     "insert-css": "^0.2.0",
     "map-limit": "0.0.1",
+    "mkdirp": "^0.5.1",
     "postcss": "^5.0.10",
     "postcss-prefix": "^1.0.3",
     "resolve": "^1.1.6",
@@ -35,6 +37,7 @@
     "istanbul": "^0.3.19",
     "jsdom": "^8.0.2",
     "npm-check-updates": "^2.2.0",
+    "rimraf": "^2.5.1",
     "sheetify-cssnext": "^1.0.0",
     "standard": "^5.2.1",
     "tape": "^4.2.0"

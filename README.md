@@ -73,10 +73,18 @@ Compile with browserify using `-t [ sheetify/transform -u sheetify-cssnext ]`:
 $ browserify -t [ sheetify/transform -u sheetify-cssnext ] index.js > bundle.js
 ```
 
+## Write to separate file on disk
+To write the compiled CSS to a separate file, rather than keep it in the
+bundle:
+```sh
+$ browserify -t [ sheetify/transform -o bundle.css ] index.js > bundle.js
+```
+
 ## Plugins
-Sheetify supports [plugins](#plugins) that take CSS and apply a transform. To
-include [sheetify-cssnext](https://github.com/sheetify/sheetify-cssnext) to
-support autoprefixing, variables and more:
+Sheetify supports [plugins](#plugins) that take CSS and apply a transform.
+For example include
+[sheetify-cssnext](https://github.com/sheetify/sheetify-cssnext) to support
+autoprefixing, variables and more:
 ```js
 const vdom = require('virtual-dom')
 const hyperx = require('hyperx')
@@ -108,6 +116,28 @@ h1 {
 The following plugins are available:
 - [sheetify-cssnext](https://github.com/sheetify/sheetify-cssnext) - use
   tomorrow's CSS syntax today
+
+## API
+Browserify transforms accept either flags from the command line using
+[subargs](https://github.com/substack/subarg):
+```sh
+$ browserify -t [ sheetify/transform -o bundle.css ] index.js > bundle.js
+```
+Or the equivalent options by passing in a configuration object in the
+JavaScript API:
+```js
+const browserify = require('browserify')
+
+const b = browserify(path.join(__dirname, 'transform/source.js'))
+b.transform(sheetify, { out: __dirname + '/bundle.css' })
+b.bundle().pipe(process.stdout)
+```
+The following options are available:
+```txt
+Options:
+  -o, --out    Specify an output file
+  -u, --use    Consume a sheetify plugin
+```
 
 ## Installation
 ```sh
