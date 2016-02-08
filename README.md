@@ -80,6 +80,17 @@ bundle:
 $ browserify -t [ sheetify/transform -o bundle.css ] index.js > bundle.js
 ```
 
+## Write to stream
+To write the compiled CSS to a stream:
+```js
+const browserify = require('browserify')
+const fs = require('fs')
+
+const b = browserify(path.join(__dirname, 'transform/source.js'))
+b.transform('sheetify', { out: fs.createWriteStream('/bundle.css') })
+b.bundle().pipe(fs.createWriteStream('./bundle.js'))
+```
+
 ## Plugins
 Sheetify supports [plugins](#plugins) that take CSS and apply a transform.
 For example include
@@ -129,7 +140,7 @@ JavaScript API:
 const browserify = require('browserify')
 
 const b = browserify(path.join(__dirname, 'transform/source.js'))
-b.transform(sheetify, { out: __dirname + '/bundle.css' })
+b.transform('sheetify', { out: __dirname + '/bundle.css' })
 b.bundle().pipe(process.stdout)
 ```
 The following options are available:

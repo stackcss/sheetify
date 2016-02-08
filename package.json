@@ -24,6 +24,7 @@
     "end-of-stream": "^1.1.0",
     "falafel": "^1.2.0",
     "insert-css": "^0.2.0",
+    "is-stream": "^1.0.1",
     "map-limit": "0.0.1",
     "mkdirp": "^0.5.1",
     "postcss": "^5.0.10",
@@ -33,6 +34,7 @@
   },
   "devDependencies": {
     "browserify": "^13.0.0",
+    "concat-stream": "^1.5.1",
     "dependency-check": "^2.5.1",
     "istanbul": "^0.3.19",
     "jsdom": "^8.0.2",
