@@ -16,9 +16,11 @@ Modular CSS bundler for browserify. Works with [npm](http://npmjs.org/) modules
 like [browserify](http://browserify.org/) does.
 
 ## Features
-- rich plugin ecosystem
-- namespaced CSS modules using browserify
-- tiny API surface
+- __clarity:__ namespace CSS, no more need for naming schemes
+- __modularity:__ import and reuse CSS packages from npm
+- __extensibility:__ transform CSS using existing plugins, or write your own
+- __transparency:__ inline CSS in your views
+- __simplicity:__ tiny API surface and a minimal code base
 
 ## Example
 Given some inline CSS:
@@ -43,9 +45,23 @@ const tree = hx`
 document.body.appendChild(vdom.create(tree))
 ```
 
-Compile with browserify using `-t sheetify`:
+Compile with browserify using `-t sheetify/transform`:
 ```sh
 $ browserify -t sheetify/transform index.js > bundle.js
+```
+
+CSS classes are namespaced based on the content hash:
+```css
+._60ed23ec9f h1 {
+  text-align: center;
+}
+```
+
+And the rendered HTML includes the namespace:
+```html
+<section class="._60ed23e">
+  <h1>My beautiful, centered title</h1>
+</section>
 ```
 
 ## External files
