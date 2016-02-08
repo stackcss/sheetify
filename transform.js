@@ -1,7 +1,9 @@
 const mapLimit = require('map-limit')
+const isStream = require('is-stream')
 const eos = require('end-of-stream')
 const through = require('through2')
 const falafel = require('falafel')
+const assert = require('assert')
 const mkdirp = require('mkdirp')
 const path = require('path')
 const fs = require('fs')
@@ -25,7 +27,10 @@ function transform (filename, opts) {
 
   // argv parsing
   if (opts.o) opts.out = opts.o
-  if (opts.out) opts.out = path.resolve(opts.out)
+  if (opts.out) {
+    if (typeof opts.out === 'string') opts.out = path.resolve(opts.out)
+    else assert.ok(isStream(opts.out), 'opts.out must be a path or a stream')
+  }
 
   return through(write, end)
 
@@ -63,7 +68,9 @@ function transform (filename, opts) {
           const dirname = path.dirname(opts.out)
           mkdirp(dirname, function (err) {
             if (err) return done(err)
-            const ws = fs.createWriteStream(opts.out)
+            const ws = (typeof opts.out === 'string')
+              ? fs.createWriteStream(opts.out)
+              : opts.out
             eos(ws, done)
             node.update('0')
             ws.end(css)
