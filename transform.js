@@ -3,6 +3,7 @@ const isStream = require('is-stream')
 const eos = require('end-of-stream')
 const through = require('through2')
 const falafel = require('falafel')
+const resolve = require('resolve')
 const assert = require('assert')
 const mkdirp = require('mkdirp')
 const path = require('path')
@@ -59,9 +60,9 @@ function transform (filename, opts) {
     // asynchronously update css and apply to node
     // or exorcise to file
     function iterate (args, done) {
-      const transform = args[0]
+      const transformFn = args[0]
       const node = args[1]
-      transform(function (err, css, prefix) {
+      transformFn(function (err, css, prefix) {
         if (err) return done(err)
         if (opts.out) {
           // exorcise to external file
@@ -119,7 +120,9 @@ function transform (filename, opts) {
     if (node.type === 'CallExpression' &&
     node.callee && node.callee.type === 'Identifier' &&
     node.callee.name === mname) {
-      const fnp = path.join(path.dirname(filename), node.arguments[0].value)
+      const resolvePath = cssResolve(node.arguments[0].value, opts.basedir)
+      const fnp = resolvePath ||
+        path.join(path.dirname(filename), node.arguments[0].value)
       const fnCss = fs.readFileSync(fnp, 'utf8').trim()
       sheetify(fnCss, filename, opts, function (tf) {
         nodes.push([ tf, node ])
@@ -131,3 +134,24 @@ function transform (filename, opts) {
 
 function cooked (node) { return node.value.cooked }
 function expr (ex) { return { _expr: ex.source() } }
+
+// find a file in CSS with either a {style} field
+// or main with `.css` in it
+// (str, str) -> str
+function cssResolve (pkgname, basedir) {
+  const res = resolve.sync(pkgname, {
+    basedir: pkgname,
+    packageFilter: packageFilter
+  })
+
+  if (path.extname(res) !== '.css') {
+    throw new Error('path ' + res + ' is not a CSS file')
+  }
+
+  return res
+
+  function packageFilter (pkg, path) {
+    if (pkg.style) pkg.main = pkg.style
+    return pkg
+  }
+}
