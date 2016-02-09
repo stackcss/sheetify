@@ -1,37 +1,28 @@
 const browserify = require('browserify')
-const jsdom = require('jsdom')
+const concat = require('concat-stream')
 const test = require('tape')
 const path = require('path')
+const fs = require('fs')
 
 const sheetify = require(path.join(__dirname, '../transform'))
+const expath = path.join(__dirname, 'plugins/expected.css')
+const expected = fs.readFileSync(expath, 'utf8').trim()
 
 test('plugins', function (t) {
-  t.plan(3)
+  t.plan(2)
 
   const b = browserify(path.join(__dirname, 'plugins/source.js'), {
     browserField: false
   })
   b.transform(sheetify, {
     basedir: path.join(__dirname, 'plugins'),
-    use: [ [ 'sheetify-cssnext', { sourcemap: false } ] ]
+    use: [ [ 'sheetify-cssnext', { sourcemap: false } ] ],
+    out: concat(function (buf) {
+      const res = String(buf).trim()
+      t.equal(res, expected, 'css is transformed')
+    })
   })
-  b.bundle(function (err, src) {
+  b.bundle(function (err) {
     t.ifError(err, 'no error')
-
-    const virtualConsole = jsdom.createVirtualConsole()
-    virtualConsole.on('log', function (log) {
-      t.equal(log, '_08548a3e', 'reports prefix')
-    })
-
-    jsdom.env({
-      html: '<body></body>',
-      src: [ String(src) ],
-      done: world,
-      virtualConsole: virtualConsole
-    })
-
-    function world (err, window) {
-      t.ifError(err, 'no error')
-    }
   })
 })
