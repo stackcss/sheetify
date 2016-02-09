@@ -28,7 +28,6 @@
     "map-limit": "0.0.1",
     "mkdirp": "^0.5.1",
     "postcss": "^5.0.10",
-    "postcss-import": "^8.0.2",
     "postcss-prefix": "^1.0.3",
     "resolve": "^1.1.6",
     "through2": "^2.0.0"
