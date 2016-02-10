@@ -33,8 +33,10 @@ function parseCss (src, filename, prefix, options, next) {
   assert.equal(typeof options, 'object', 'options must be a object')
   assert.equal(typeof next, 'function', 'done must be a function')
 
-  const processedCss = postcss()
-    .use(cssPrefix('.' + prefix))
+  var p = postcss()
+  if (options.global !== true) p = p.use(cssPrefix('.' + prefix))
+
+  const processedCss = p
     .process(src.toString())
     .toString()
 
