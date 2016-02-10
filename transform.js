@@ -36,7 +36,8 @@ function transform (filename, opts) {
     else assert.ok(isStream(opts.out), 'opts.out must be a path or a stream')
   }
 
-  return through(write, end)
+  const outStream = through(write, end)
+  return outStream
 
   // aggregate all AST nodes
   // (buf, str, fn) -> null
@@ -134,6 +135,7 @@ function transform (filename, opts) {
       const fnp = resolvePath ||
         path.join(path.dirname(filename), node.arguments[0].value)
       if (resolvePath) opts.global = true
+      else outStream.emit('file', fnp)
       const fnCss = fs.readFileSync(fnp, 'utf8').trim()
 
       // read optional arguments passed in to node
