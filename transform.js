@@ -6,6 +6,7 @@ const falafel = require('falafel')
 const resolve = require('resolve')
 const assert = require('assert')
 const mkdirp = require('mkdirp')
+const xtend = require('xtend')
 const path = require('path')
 const fs = require('fs')
 
@@ -25,6 +26,8 @@ function transform (filename, opts) {
   const bufs = []
   const nodes = []
   var mname = null
+
+  opts = xtend(opts)
 
   // argv parsing
   if (opts.o) opts.out = opts.o
@@ -123,9 +126,14 @@ function transform (filename, opts) {
     if (node.type === 'CallExpression' &&
     node.callee && node.callee.type === 'Identifier' &&
     node.callee.name === mname) {
+      // determine path
+      // - check if module import
+      // - don't prefix by default if module import
+      // - check if local file
       const resolvePath = cssResolve(node.arguments[0].value, opts.basedir)
       const fnp = resolvePath ||
         path.join(path.dirname(filename), node.arguments[0].value)
+      if (resolvePath) opts.global = true
       const fnCss = fs.readFileSync(fnp, 'utf8').trim()
 
       // read optional arguments passed in to node
