@@ -16,7 +16,6 @@ test('import', function (t) {
   })
   b.transform(sheetify, {
     basedir: path.join(__dirname, 'plugins'),
-    use: [ [ 'sheetify-cssnext', { sourcemap: false } ] ],
     out: concat(function (buf) {
       const res = String(buf).trim()
       t.equal(res, expected, 'package was imported')
