@@ -89,6 +89,24 @@ Compile with browserify using `-t [ sheetify/transform -u sheetify-cssnext ]`:
 $ browserify -t [ sheetify/transform -u sheetify-cssnext ] index.js > bundle.js
 ```
 
+## Use npm packages
+To consume a package from npm that has `.css` file in its `main` or `style`
+field:
+```js
+const sf = require('sheetify')
+
+sf('css-wipe')
+```
+Packages from npm will not be namespaced by default.
+
+## Toggle namespaces
+To toggle namespaces for external files or npm packages:
+```js
+const sf = require('sheetify')
+
+sf('./my-file.css', { global: true })
+```
+
 ## Write to separate file on disk
 To write the compiled CSS to a separate file, rather than keep it in the
 bundle:
