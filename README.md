@@ -174,7 +174,7 @@ JavaScript API:
 const browserify = require('browserify')
 
 const b = browserify(path.join(__dirname, 'transform/source.js'))
-b.transform('sheetify', { out: __dirname + '/bundle.css' })
+b.transform('sheetify', { out: path.join(__dirname, '/bundle.css') })
 b.bundle().pipe(process.stdout)
 ```
 The following options are available:
