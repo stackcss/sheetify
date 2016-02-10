@@ -57,8 +57,9 @@ function transform (filename, opts) {
       self.push(null)
     })
 
-    // asynchronously update css and apply to node
-    // or exorcise to file
+    // find sheetify call
+    // - read from file, read from inline or resolve npm package
+    // - detect if should be prefixed or not
     function iterate (args, done) {
       const transformFn = args[0]
       const node = args[1]
@@ -109,9 +110,11 @@ function transform (filename, opts) {
     node.parent.tag.name === mname) {
       const tmplCss = [ node.quasis.map(cooked) ]
         .concat(node.expressions.map(expr)).join('').trim()
+
       sheetify(tmplCss, filename, opts, function (tf) {
         nodes.push([ tf, node.parent ])
       })
+
       return
     }
 
@@ -124,9 +127,20 @@ function transform (filename, opts) {
       const fnp = resolvePath ||
         path.join(path.dirname(filename), node.arguments[0].value)
       const fnCss = fs.readFileSync(fnp, 'utf8').trim()
+
+      // read optional arguments passed in to node
+      // e.g. { global: false }
+      if (node.arguments[1] && node.arguments[1].properties) {
+        const props = node.arguments[1].properties
+        props.forEach(function (prop) {
+          opts[prop.key.name] = prop.value.value
+        })
+      }
+
       sheetify(fnCss, filename, opts, function (tf) {
         nodes.push([ tf, node ])
       })
+
       return
     }
   }
@@ -139,16 +153,20 @@ function expr (ex) { return { _expr: ex.source() } }
 // or main with `.css` in it
 // (str, str) -> str
 function cssResolve (pkgname, basedir) {
-  const res = resolve.sync(pkgname, {
-    basedir: pkgname,
-    packageFilter: packageFilter
-  })
+  try {
+    const res = resolve.sync(pkgname, {
+      basedir: pkgname,
+      packageFilter: packageFilter
+    })
 
-  if (path.extname(res) !== '.css') {
-    throw new Error('path ' + res + ' is not a CSS file')
+    if (path.extname(res) !== '.css') {
+      throw new Error('path ' + res + ' is not a CSS file')
+    }
+
+    return res
+  } catch (e) {
+    return
   }
-
-  return res
 
   function packageFilter (pkg, path) {
     if (pkg.style) pkg.main = pkg.style
