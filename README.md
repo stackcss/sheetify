@@ -126,8 +126,8 @@ b.transform('sheetify', { out: ws })
 const r = b.bundle().pipe(fs.createWriteStream('./bundle.js'))
 r.on('end', () => ws.end())
 ```
-Browserify transforms don't know when `browserify` is done, so we attach a
-listener on browserify for the `'end'` event, and close the writeStream
+Browserify transforms don't know when `browserify` is done, so we have to
+attach a listener on browserify for the `'end'` event to close the writeStream
 accordingly.
 
 ## Plugins
