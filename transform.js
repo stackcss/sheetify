@@ -36,8 +36,8 @@ function transform (filename, opts) {
     else assert.ok(isStream(opts.out), 'opts.out must be a path or a stream')
   }
 
-  const outStream = through(write, end)
-  return outStream
+  const transformStream = through(write, end)
+  return transformStream
 
   // aggregate all AST nodes
   // (buf, str, fn) -> null
@@ -71,17 +71,24 @@ function transform (filename, opts) {
         if (err) return done(err)
         if (opts.out) {
           // exorcise to external file
-          const dirname = path.dirname(opts.out)
-          mkdirp(dirname, function (err) {
-            if (err) return done(err)
-            const ws = (typeof opts.out === 'string')
-              ? fs.createWriteStream(opts.out)
-              : opts.out
+          if (typeof opts.out === 'string') {
+            const dirname = path.dirname(opts.out)
+            mkdirp(dirname, function (err) {
+              if (err) return done(err)
+              const ws = fs.createWriteStream(opts.out)
+              eos(ws, done)
+              node.update('0')
+              ws.write(css)
+              done()
+            })
+          } else {
+            // exorcise to stream
+            const ws = opts.out
             eos(ws, done)
             node.update('0')
-            ws.end(css)
+            ws.write(css)
             done()
-          })
+          }
         } else {
           // inject CSS inline
           const str = [
@@ -136,7 +143,7 @@ function transform (filename, opts) {
       const fnp = resolvePath ||
         path.join(path.dirname(filename), node.arguments[0].value)
       if (resolvePath) opts.global = true
-      else outStream.emit('file', fnp)
+      else transformStream.emit('file', fnp)
       const fnCss = fs.readFileSync(fnp, 'utf8').trim()
 
       // read optional arguments passed in to node
