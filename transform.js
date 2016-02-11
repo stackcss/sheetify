@@ -56,7 +56,7 @@ function transform (filename, opts) {
     // transform all detected nodes and
     // close stream when done
     mapLimit(nodes, Infinity, iterate, function (err) {
-      if (err) return this.emit('error', err)
+      if (err) return self.emit('error', err)
       self.push(ast.toString())
       self.push(null)
     })
@@ -147,7 +147,7 @@ function transform (filename, opts) {
         })
       }
 
-      sheetify(fnCss, filename, opts, function (tf) {
+      sheetify(fnCss, fnp, opts, function (tf) {
         nodes.push([ tf, node ])
       })
 
