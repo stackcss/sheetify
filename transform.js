@@ -80,6 +80,7 @@ function transform (filename, opts) {
             eos(ws, done)
             node.update('0')
             ws.end(css)
+            done()
           })
         } else {
           // inject CSS inline
