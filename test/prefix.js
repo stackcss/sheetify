@@ -7,23 +7,25 @@ const fs = require('fs')
 const sheetify = require(path.join(__dirname, '../transform'))
 
 test('test global prefix', function (t) {
-  t.plan(2)
+  t.plan(1)
 
-  const b = browserify(path.join(__dirname, 'prefix/global-true.js'), {
-    browserField: false
+  const ws = concat(function (buf) {
+    const result = String(buf).trim()
+    const expectpath = path.join(__dirname, 'prefix/source.css')
+    const expected = fs.readFileSync(expectpath, 'utf8').trim()
+    t.equal(result, expected, 'exorcised to stream')
   })
 
+  const bOpts = { browserField: false }
+  const b = browserify(path.join(__dirname, 'prefix/global-true.js'), bOpts)
   b.transform(sheetify, {
-    basedir: path.join(__dirname, 'transform'),
-    o: concat(function (buf) {
-      const result = String(buf).trim()
-      const expectpath = path.join(__dirname, 'prefix/source.css')
-      const expected = fs.readFileSync(expectpath, 'utf8').trim()
-      t.equal(result, expected, 'exorcised to stream')
-    })
+    basedir: path.join(__dirname, 'prefix'),
+    o: ws
   })
 
-  b.bundle(function (err, src) {
-    t.ifError(err, 'no error')
+  const r = b.bundle()
+  r.resume()
+  r.on('end', function () {
+    ws.end()
   })
 })

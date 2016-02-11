@@ -9,20 +9,24 @@ const expath = path.join(__dirname, 'plugins/expected.css')
 const expected = fs.readFileSync(expath, 'utf8').trim()
 
 test('plugins', function (t) {
-  t.plan(2)
+  t.plan(1)
 
-  const b = browserify(path.join(__dirname, 'plugins/source.js'), {
-    browserField: false
+  const ws = concat(function (buf) {
+    const res = String(buf).trim()
+    t.equal(res, expected, 'css is transformed')
   })
+
+  const bOpts = { browserField: false }
+  const b = browserify(path.join(__dirname, 'plugins/source.js'), bOpts)
   b.transform(sheetify, {
-    basedir: path.join(__dirname, 'plugins'),
     use: [ [ 'sheetify-cssnext', { sourcemap: false } ] ],
-    out: concat(function (buf) {
-      const res = String(buf).trim()
-      t.equal(res, expected, 'css is transformed')
-    })
+    basedir: path.join(__dirname, 'plugins'),
+    o: ws
   })
-  b.bundle(function (err) {
-    t.ifError(err, 'no error')
+
+  const r = b.bundle()
+  r.resume()
+  r.on('end', function () {
+    ws.end()
   })
 })

@@ -9,19 +9,23 @@ const expath = require.resolve('css-type-base/index.css')
 const expected = fs.readFileSync(expath, 'utf8').trim()
 
 test('import', function (t) {
-  t.plan(2)
+  t.plan(1)
 
-  const b = browserify(path.join(__dirname, 'import/source.js'), {
-    browserField: false
+  const ws = concat(function (buf) {
+    const res = String(buf).trim()
+    t.equal(res, expected, 'package was imported')
   })
+
+  const bOpts = { browserField: false }
+  const b = browserify(path.join(__dirname, 'import/source.js'), bOpts)
   b.transform(sheetify, {
     basedir: path.join(__dirname, 'plugins'),
-    out: concat(function (buf) {
-      const res = String(buf).trim()
-      t.equal(res, expected, 'package was imported')
-    })
+    o: ws
   })
-  b.bundle(function (err) {
-    t.ifError(err, 'no error')
+
+  const r = b.bundle()
+  r.resume()
+  r.on('end', function () {
+    ws.end()
   })
 })

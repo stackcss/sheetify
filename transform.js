@@ -78,8 +78,7 @@ function transform (filename, opts) {
               const ws = fs.createWriteStream(opts.out)
               eos(ws, done)
               node.update('0')
-              ws.write(css)
-              done()
+              ws.end(css)
             })
           } else {
             // exorcise to stream

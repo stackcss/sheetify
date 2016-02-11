@@ -121,9 +121,14 @@ const browserify = require('browserify')
 const fs = require('fs')
 
 const b = browserify(path.join(__dirname, 'transform/source.js'))
-b.transform('sheetify', { out: fs.createWriteStream('/bundle.css') })
-b.bundle().pipe(fs.createWriteStream('./bundle.js'))
+const ws = fs.createWriteStream('/bundle.css')
+b.transform('sheetify', { out: ws })
+const r = b.bundle().pipe(fs.createWriteStream('./bundle.js'))
+r.on('end', () => ws.end())
 ```
+Browserify transforms don't know when `browserify` is done, so we attach a
+listener on browserify for the `'end'` event, and close the writeStream
+accordingly.
 
 ## Plugins
 Sheetify supports [plugins](#plugins) that take CSS and apply a transform.

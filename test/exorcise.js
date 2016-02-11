@@ -29,8 +29,8 @@ test('exorcise to disk', function (t) {
 
     function log (msg) {
       t.equal(msg, 0, 'empty message')
-      const outfile = fs.readFileSync(outpath, 'utf8')
       const expected = fs.readFileSync(expectpath, 'utf8')
+      const outfile = fs.readFileSync(outpath, 'utf8')
 
       t.equal(outfile, expected, 'output matches')
 
@@ -42,28 +42,26 @@ test('exorcise to disk', function (t) {
 })
 
 test('exorcise to stream', function (t) {
-  t.plan(3)
+  t.plan(1)
 
   const b = browserify(path.join(__dirname, 'exorcise/source.js'), {
     browserField: false
   })
 
-  b.transform(sheetify, {
-    basedir: path.join(__dirname, 'transform'),
-    o: concat(function (buf) {
-      const result = String(buf)
-      const expected = fs.readFileSync(expectpath, 'utf8')
-      t.equal(result, expected, 'exorcised to stream')
-    })
+  const ws = concat(function (buf) {
+    const result = String(buf)
+    const expected = fs.readFileSync(expectpath, 'utf8')
+    t.equal(result, expected, 'exorcised to stream')
   })
 
-  b.bundle(function (err, src) {
-    t.ifError(err, 'no error')
-    const c = { console: { log: log } }
-    vm.runInNewContext(src.toString(), c)
+  b.transform(sheetify, {
+    basedir: path.join(__dirname, 'transform'),
+    o: ws
+  })
 
-    function log (msg) {
-      t.equal(msg, 0, 'empty message')
-    }
+  const r = b.bundle()
+  r.resume()
+  r.on('end', function () {
+    ws.end()
   })
 })
