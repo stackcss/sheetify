@@ -84,11 +84,6 @@ const tree = hx`
 document.body.appendChild(vdom.create(tree))
 ```
 
-Compile with browserify using `-t [ sheetify/transform -u sheetify-cssnext ]`:
-```sh
-$ browserify -t [ sheetify/transform -u sheetify-cssnext ] index.js > bundle.js
-```
-
 ## Use npm packages
 To consume a package from npm that has `.css` file in its `main` or `style`
 field:
@@ -131,7 +126,7 @@ attach a listener on browserify for the `'end'` event to close the writeStream
 accordingly.
 
 ## Plugins
-Sheetify supports [plugins](#plugins) that take CSS and apply a transform.
+Sheetify uses [plugins](#plugins) that take CSS and apply a transform.
 For example include
 [sheetify-cssnext](https://github.com/sheetify/sheetify-cssnext) to support
 autoprefixing, variables and more:
@@ -155,6 +150,12 @@ const tree = hx`
 
 document.body.appendChild(vdom.create(tree))
 ```
+
+Compile with browserify using `-t [ sheetify/transform -u sheetify-cssnext ]`:
+```sh
+$ browserify -t [ sheetify/transform -u sheetify-cssnext ] index.js > bundle.js
+```
+
 Transforms the CSS into:
 ```css
 h1 {
