@@ -27,6 +27,7 @@ function transform (filename, opts) {
   const nodes = []
   var mname = null
 
+  opts.basedir = opts.basedir || process.cwd()
   opts = xtend(opts)
 
   // argv parsing
