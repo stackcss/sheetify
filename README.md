@@ -90,7 +90,7 @@ field:
 ```js
 const sf = require('sheetify')
 
-sf('css-wipe')
+sf('normalize.css')
 ```
 Packages from npm will not be namespaced by default.
 
