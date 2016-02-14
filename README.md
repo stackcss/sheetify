@@ -195,6 +195,15 @@ Options:
 $ npm install sheetify
 ```
 
+## See Also
+- [browserify](https://github.com/substack/node-browserify) - browser-side
+  require() the node.js way
+- [glslify](https://github.com/stackgl/glslify) - module system for GLSL
+  shaders
+- [hyperx](https://github.com/substack/hyperx) - transform inline HTML to JS
+- [bankai](https://github.com/yoshuawuyts/bankai) - DIY server middleware for
+  JS, CSS and HTML
+
 ## License
 [MIT](https://tldrlegal.com/license/mit-license)
 
