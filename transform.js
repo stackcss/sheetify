@@ -3,13 +3,13 @@ const isStream = require('is-stream')
 const eos = require('end-of-stream')
 const through = require('through2')
 const falafel = require('falafel')
-const resolve = require('resolve')
 const assert = require('assert')
 const mkdirp = require('mkdirp')
 const xtend = require('xtend')
 const path = require('path')
 const fs = require('fs')
 
+const cssResolve = require('./lib/css-resolve')
 const sheetify = require('./index')
 
 module.exports = transform
@@ -144,50 +144,30 @@ function transform (filename, opts) {
         path.join(path.dirname(filename), node.arguments[0].value)
       if (resolvePath) opts.global = true
       else transformStream.emit('file', fnp)
-      const fnCss = fs.readFileSync(fnp, 'utf8').trim()
+      try {
+        const fnCss = fs.readFileSync(fnp, 'utf8').trim()
 
-      // read optional arguments passed in to node
-      // e.g. { global: false }
-      if (node.arguments[1] && node.arguments[1].properties) {
-        const props = node.arguments[1].properties
-        props.forEach(function (prop) {
-          opts[prop.key.name] = prop.value.value
+        // read optional arguments passed in to node
+        // e.g. { global: false }
+        if (node.arguments[1] && node.arguments[1].properties) {
+          const props = node.arguments[1].properties
+          props.forEach(function (prop) {
+            opts[prop.key.name] = prop.value.value
+          })
+        }
+
+        sheetify(fnCss, fnp, opts, function (tf) {
+          nodes.push([ tf, node ])
         })
+
+        return
+      } catch (e) {
+        const errMsg = 'sheetify: ' + e.path + ' cannot be imported'
+        return transformStream.emit('error', errMsg)
       }
-
-      sheetify(fnCss, fnp, opts, function (tf) {
-        nodes.push([ tf, node ])
-      })
-
-      return
     }
   }
 }
 
 function cooked (node) { return node.value.cooked }
 function expr (ex) { return { _expr: ex.source() } }
-
-// find a file in CSS with either a {style} field
-// or main with `.css` in it
-// (str, str) -> str
-function cssResolve (pkgname, basedir) {
-  try {
-    const res = resolve.sync(pkgname, {
-      basedir: pkgname,
-      packageFilter: packageFilter
-    })
-
-    if (path.extname(res) !== '.css') {
-      throw new Error('path ' + res + ' is not a CSS file')
-    }
-
-    return res
-  } catch (e) {
-    return
-  }
-
-  function packageFilter (pkg, path) {
-    if (pkg.style) pkg.main = pkg.style
-    return pkg
-  }
-}
