@@ -190,6 +190,14 @@ Options:
   -u, --use    Consume a sheetify plugin
 ```
 
+## FAQ
+### Help, why isn't my inline CSS being transformed?
+Well, that might be because you're running `babelify` before running
+`sheetify`. `sheetify` looks for template strings in your code and then
+transforms them as inline stylesheets. If these are caught and transformed to
+ES5 strings by `babelify` then `sheetify` ends up sad. So try running
+`sheetify` before `babelify` and you should be good, we hope.
+
 ## Installation
 ```sh
 $ npm install sheetify
