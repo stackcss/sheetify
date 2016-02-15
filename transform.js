@@ -79,14 +79,14 @@ function transform (filename, opts) {
               if (err) return done(err)
               const ws = fs.createWriteStream(opts.out)
               eos(ws, done)
-              node.update('0')
+              node.update('"' + prefix + '"')
               ws.end(css)
             })
           } else {
             // exorcise to stream
             const ws = opts.out
             eos(ws, done)
-            node.update('0')
+            node.update('"' + prefix + '"')
             ws.write(css)
             done()
           }

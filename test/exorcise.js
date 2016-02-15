@@ -28,7 +28,7 @@ test('exorcise to disk', function (t) {
     vm.runInNewContext(src.toString(), c)
 
     function log (msg) {
-      t.equal(msg, 0, 'empty message')
+      t.equal(msg, '_b9e94bdb', 'echoes prefix')
       const expected = fs.readFileSync(expectpath, 'utf8')
       const outfile = fs.readFileSync(outpath, 'utf8')
 
