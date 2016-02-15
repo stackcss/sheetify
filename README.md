@@ -64,6 +64,34 @@ And the rendered HTML includes the namespace:
 </section>
 ```
 
+## Styling host elements
+The element that gets a prefix applied can be styled using the [`:host`
+pseudoselector][1]:
+```js
+const vdom = require('virtual-dom')
+const hyperx = require('hyperx')
+const sf = require('sheetify')
+const hx = hyperx(vdom.h)
+
+const prefix = sf`
+  :host {
+    background-color: blue;
+  }
+
+  :host > h1 {
+    text-decoration: underline;
+  }
+`
+
+const tree = hx`
+  <section className=${prefix}>
+    <h1>My beautiful, centered title</h1>
+  </section>
+`
+
+document.body.appendChild(vdom.create(tree))
+```
+
 ## External files
 To include an external CSS file you can pass a path to sheetify as
 `sheetify('./my-file.css')`:
@@ -225,3 +253,4 @@ $ npm install sheetify
 [downloads-url]: https://npmjs.org/package/sheetify
 [standard-image]: https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square
 [standard-url]: https://github.com/feross/standard
+[1]: http://www.html5rocks.com/en/tutorials/webcomponents/shadowdom-201/#toc-style-host
