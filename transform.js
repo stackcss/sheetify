@@ -85,7 +85,6 @@ function transform (filename, opts) {
           } else {
             // exorcise to stream
             const ws = opts.out
-            eos(ws, done)
             node.update('"' + prefix + '"')
             ws.write(css)
             done()
