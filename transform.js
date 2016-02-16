@@ -1,3 +1,4 @@
+const cssResolve = require('style-resolve').sync
 const mapLimit = require('map-limit')
 const isStream = require('is-stream')
 const eos = require('end-of-stream')
@@ -9,7 +10,6 @@ const xtend = require('xtend')
 const path = require('path')
 const fs = require('fs')
 
-const cssResolve = require('./lib/css-resolve')
 const sheetify = require('./index')
 
 module.exports = transform
@@ -139,7 +139,13 @@ function transform (filename, opts) {
       // - check if module import
       // - don't prefix by default if module import
       // - check if local file
-      const resolvePath = cssResolve(node.arguments[0].value, opts.basedir)
+      try {
+        var resolvePath = cssResolve(node.arguments[0].value, { basedir: opts.basedir })
+      } catch (err) {
+        if (err.message.substring(0, 18) !== 'Cannot find module') {
+          throw err
+        }
+      }
       const fnp = resolvePath ||
         path.join(path.dirname(filename), node.arguments[0].value)
       if (resolvePath) opts.global = true
