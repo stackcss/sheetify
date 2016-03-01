@@ -50,8 +50,9 @@ function parseCss (src, filename, prefix, options, next) {
   // one at the time
   // (str, str, obj, fn) -> null
   function applyTransforms (filename, src, options, done) {
-    var use = options.use || []
-    use = Array.isArray(use) ? use.slice() : [ use ]
+    options.u = options.u || []
+    options.use = options.use || []
+    var use = [].concat(options.use).concat(options.u)
 
     mapLimit(use, 1, iterate, function (err) {
       if (err) return done(err)
