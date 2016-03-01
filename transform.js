@@ -22,14 +22,13 @@ module.exports = transform
 //    with CSS injection or extract CSS to callback
 // 4. flush transform
 // obj -> (str, opts) -> str
-function transform (filename, opts) {
+function transform (filename, options) {
   const bufs = []
   const nodes = []
   var mname = null
 
-  opts = opts || {}
+  const opts = xtend(options || {})
   opts.basedir = opts.basedir || process.cwd()
-  opts = xtend(opts)
 
   // argv parsing
   if (opts.o) opts.out = opts.o
@@ -105,6 +104,8 @@ function transform (filename, opts) {
   // transform an AST node
   // obj -> null
   function walk (node) {
+    opts.global = false
+
     // transform require calls
     if (node.type === 'CallExpression' &&
     node.callee && node.callee.name === 'require' &&
@@ -140,7 +141,9 @@ function transform (filename, opts) {
       // - don't prefix by default if module import
       // - check if local file
       try {
-        var resolvePath = cssResolve(node.arguments[0].value, { basedir: opts.basedir })
+        var resolvePath = cssResolve(node.arguments[0].value, {
+          basedir: opts.basedir
+        })
       } catch (err) {
         if (err.message.substring(0, 18) !== 'Cannot find module') {
           throw err
