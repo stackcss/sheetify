@@ -129,6 +129,9 @@ const sf = require('sheetify')
 
 sf('./my-file.css', { global: true })
 ```
+Be aware that when you toggle the namespace, the `:host` element matches won't
+work anymore because the class it targets no longer exists. Only use this
+toggle to write styles that are, well, global.
 
 ## Write to separate file on disk
 To write the compiled CSS to a separate file, rather than keep it in the
