@@ -5,28 +5,30 @@ const path = require('path')
 const fs = require('fs')
 
 const sheetify = require(path.join(__dirname, '../transform'))
-const expath = path.join(__dirname, 'plugins/expected.css')
-const expected = fs.readFileSync(expath, 'utf8').trim()
 
 test('plugins', function (t) {
-  t.plan(1)
+  t.test('should transform CSS', function (t) {
+    t.plan(1)
 
-  const ws = concat(function (buf) {
-    const res = String(buf).trim()
-    t.equal(res, expected, 'css is transformed')
-  })
+    const expath = path.join(__dirname, 'fixtures/plugins-expected.css')
+    const expected = fs.readFileSync(expath, 'utf8').trim()
 
-  const bOpts = { browserField: false }
-  const b = browserify(path.join(__dirname, 'plugins/source.js'), bOpts)
-  b.transform(sheetify, {
-    use: [ [ 'sheetify-cssnext', { sourcemap: false } ] ],
-    basedir: path.join(__dirname, 'plugins'),
-    o: ws
-  })
+    const ws = concat(function (buf) {
+      const res = String(buf).trim()
+      t.equal(res, expected, 'CSS was transformed')
+    })
 
-  const r = b.bundle()
-  r.resume()
-  r.on('end', function () {
-    ws.end()
+    const bOpts = { browserField: false }
+    const bpath = path.join(__dirname, 'fixtures/plugins-source.js')
+    browserify(bpath, bOpts)
+      .transform(sheetify, {
+        use: [ [ 'sheetify-cssnext', { sourcemap: false } ] ]
+      })
+      .plugin('css-extract', { out: outFn })
+      .bundle()
+
+    function outFn () {
+      return ws
+    }
   })
 })
