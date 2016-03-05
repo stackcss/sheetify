@@ -4,12 +4,13 @@ const mapLimit = require('map-limit')
 const postcss = require('postcss')
 const assert = require('assert')
 const crypto = require('crypto')
+const xtend = require('xtend')
 
 module.exports = sheetify
 
 // transform css
 // (str, str, obj?, fn) -> str
-function sheetify (src, filename, options, push) {
+function sheetify (src, filename, options, done) {
   // handle tagged template calls directly from Node
   if (Array.isArray(src)) src = src.join('')
   assert.equal(typeof src, 'string', 'src must be a string')
@@ -20,41 +21,33 @@ function sheetify (src, filename, options, push) {
     .slice(0, 8)
 
   // only parse if in a browserify transform
-  if (filename) parseCss(src, filename, prefix, options, push)
+  if (filename) parseCss(src, filename, prefix, options, done)
 
   return prefix
 }
 
 // parse css
 // (str, str, str, obj, fn) -> null
-function parseCss (src, filename, prefix, options, next) {
+function parseCss (src, filename, prefix, options, done) {
   assert.equal(typeof filename, 'string', 'filename must be a string')
   assert.equal(typeof prefix, 'string', 'prefix must be a string')
   assert.equal(typeof options, 'object', 'options must be a object')
-  assert.equal(typeof next, 'function', 'done must be a function')
+  assert.equal(typeof done, 'function', 'done must be a function')
 
-  var p = postcss()
-  if (options.global !== true) p = p.use(cssPrefix('.' + prefix))
-
-  const processedCss = p
-    .process(src.toString())
-    .toString()
-
-  next(function (done) {
-    applyTransforms(filename, processedCss, options, function (err, css) {
-      return done(err, css, prefix)
-    })
+  applyTransforms(filename, String(src), xtend(options), function (err, css) {
+    if (err) return done(err)
+    var p = postcss()
+    if (options.global !== true) p = p.use(cssPrefix('.' + prefix))
+    css = p.process(css).toString()
+    return done(null, css, prefix)
   })
 
   // apply transforms to a string of css,
   // one at the time
   // (str, str, obj, fn) -> null
   function applyTransforms (filename, src, options, done) {
-    options.u = options.u || []
-    options.use = options.use || []
-    var use = [].concat(options.use).concat(options.u)
-
-    mapLimit(use, 1, iterate, function (err) {
+    options.use = [].concat(options.use || []).concat(options.u || [])
+    mapLimit(options.use, 1, iterate, function (err) {
       if (err) return done(err)
       done(null, src)
     })
@@ -71,7 +64,9 @@ function parseCss (src, filename, prefix, options, next) {
       const name = plugin[0]
       const opts = plugin[1] || {}
 
-      const resolveOpts = { basedir: opts.basedir || options.basedir }
+      const resolveOpts = {
+        basedir: opts.basedir || options.basedir || process.cwd()
+      }
       nodeResolve(name, resolveOpts, function (err, transformPath) {
         if (err) return done(err)
 

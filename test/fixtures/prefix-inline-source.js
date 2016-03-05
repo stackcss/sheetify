@@ -1,5 +1,7 @@
 const sf = require('sheetify')
 
-const prefix = sf('./source.css')
-
+const prefix = sf`.foo {
+  color: blue;
+}
+`
 console.log(prefix)

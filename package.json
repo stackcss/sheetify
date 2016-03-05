@@ -6,8 +6,8 @@
   "license": "MIT",
   "scripts": {
     "deps": "dependency-check . --entry transform.js . && dependency-check . --entry transform.js --extra --no-dev -i insert-css",
-    "test": "standard && npm run deps && tape test/*",
-    "test:cov": "standard && npm run deps && NODE_ENV=test istanbul cover test/coverage.js",
+    "test": "standard && npm run deps && tape test/index.js",
+    "test:cov": "standard && npm run deps && NODE_ENV=test istanbul cover test/index.js",
     "format": "standard --format"
   },
   "browser": {
@@ -21,14 +21,13 @@
     "css-modules"
   ],
   "dependencies": {
-    "end-of-stream": "^1.1.0",
     "falafel": "^1.2.0",
     "is-stream": "^1.0.1",
     "map-limit": "0.0.1",
-    "mkdirp": "^0.5.1",
     "postcss": "^5.0.10",
     "postcss-prefix": "^1.0.3",
     "resolve": "^1.1.7",
+    "static-eval": "^0.2.4",
     "style-resolve": "^1.0.0",
     "through2": "^2.0.0",
     "xtend": "^4.0.1"
@@ -39,8 +38,10 @@
   "devDependencies": {
     "browserify": "^13.0.0",
     "concat-stream": "^1.5.1",
+    "css-extract": "^1.0.0",
     "css-type-base": "^1.0.2",
     "dependency-check": "^2.5.1",
+    "insert-css": "^0.2.0",
     "istanbul": "^0.3.19",
     "jsdom": "^8.0.2",
     "npm-check-updates": "^2.2.0",

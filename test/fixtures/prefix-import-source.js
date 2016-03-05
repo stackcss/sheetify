@@ -1,6 +1,4 @@
 const sf = require('sheetify')
 
-const prefix = sf`
-  h1 { text-align: center; }
-`
+const prefix = sf('./prefix-import-source.css')
 console.log(prefix)

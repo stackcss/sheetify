@@ -1,11 +1,4 @@
 # sheetify
-<img
-  alt="sheetify logo"
-  height="100"
-  style="max-width: 100%"
-  data-canonical-src="https://github.com/sheetify/logo"
-  src="https://raw.githubusercontent.com/sheetify/logo/master/512v6.png">
-
 [![NPM version][npm-image]][npm-url]
 [![build status][travis-image]][travis-url]
 [![Test coverage][codecov-image]][codecov-url]
@@ -135,26 +128,15 @@ toggle to write styles that are, well, global.
 
 ## Write to separate file on disk
 To write the compiled CSS to a separate file, rather than keep it in the
-bundle:
+bundle use [css-extract][2]:
 ```sh
-$ browserify -t [ sheetify/transform -o bundle.css ] index.js > bundle.js
+$ browserify index.js \
+  -t [ sheetify/transform ] \
+  -p [ css-extract -o bundle.css ] index.js \
+  -o bundle.js
 ```
-
-## Write to stream
-To write the compiled CSS to a stream:
-```js
-const browserify = require('browserify')
-const fs = require('fs')
-
-const b = browserify(path.join(__dirname, 'transform/source.js'))
-const ws = fs.createWriteStream('/bundle.css')
-b.transform('sheetify', { out: ws })
-const r = b.bundle().pipe(fs.createWriteStream('./bundle.js'))
-r.on('end', () => ws.end())
-```
-Browserify transforms don't know when `browserify` is done, so we have to
-attach a listener on browserify for the `'end'` event to close the writeStream
-accordingly.
+[css-extract][2] can also write to a stream from the JS api, look at the
+documentation to see how.
 
 ## Plugins
 Sheetify uses [plugins](#plugins) that take CSS and apply a transform.
@@ -203,21 +185,22 @@ The following plugins are available:
 Browserify transforms accept either flags from the command line using
 [subargs](https://github.com/substack/subarg):
 ```sh
-$ browserify -t [ sheetify/transform -o bundle.css ] index.js > bundle.js
+$ browserify -t [ sheetify/transform -u sheetify-cssnext ] index.js > bundle.js
 ```
+
 Or the equivalent options by passing in a configuration object in the
 JavaScript API:
 ```js
 const browserify = require('browserify')
 
 const b = browserify(path.join(__dirname, 'transform/source.js'))
-b.transform('sheetify', { out: path.join(__dirname, '/bundle.css') })
+b.transform('sheetify', { use: [ 'sheetify-cssnext' ] })
 b.bundle().pipe(process.stdout)
 ```
+
 The following options are available:
 ```txt
 Options:
-  -o, --out    Specify an output file
   -u, --use    Consume a sheetify plugin
 ```
 
@@ -242,18 +225,20 @@ $ npm install sheetify
 - [hyperx](https://github.com/substack/hyperx) - transform inline HTML to JS
 - [bankai](https://github.com/yoshuawuyts/bankai) - DIY server middleware for
   JS, CSS and HTML
+- [css-extract][2]: extract CSS from a browserify bundle
 
 ## License
 [MIT](https://tldrlegal.com/license/mit-license)
 
 [npm-image]: https://img.shields.io/npm/v/sheetify.svg?style=flat-square
 [npm-url]: https://npmjs.org/package/sheetify
-[travis-image]: https://img.shields.io/travis/sheetify/sheetify/master.svg?style=flat-square
-[travis-url]: https://travis-ci.org/sheetify/sheetify
-[codecov-image]: https://img.shields.io/codecov/c/github/sheetify/sheetify/master.svg?style=flat-square
-[codecov-url]: https://codecov.io/github/sheetify/sheetify
+[travis-image]: https://img.shields.io/travis/stackcss/sheetify/master.svg?style=flat-square
+[travis-url]: https://travis-ci.org/stackcss/sheetify
+[codecov-image]: https://img.shields.io/codecov/c/github/stackcss/sheetify/master.svg?style=flat-square
+[codecov-url]: https://codecov.io/github/stackcss/sheetify
 [downloads-image]: http://img.shields.io/npm/dm/sheetify.svg?style=flat-square
 [downloads-url]: https://npmjs.org/package/sheetify
 [standard-image]: https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square
 [standard-url]: https://github.com/feross/standard
 [1]: http://www.html5rocks.com/en/tutorials/webcomponents/shadowdom-201/#toc-style-host
+[2]: https://github.com/stackcss/css-extract
