@@ -37,7 +37,7 @@ const prefix = sf`
 `
 
 const tree = hx`
-  <section className=${prefix}>
+  <section class=${prefix}>
     <h1>My beautiful, centered title</h1>
   </section>
 `
@@ -84,7 +84,7 @@ const prefix = sf`
 `
 
 const tree = hx`
-  <section className=${prefix}>
+  <section class=${prefix}>
     <h1>My beautiful, centered title</h1>
   </section>
 `
@@ -104,7 +104,7 @@ const hx = hyperx(vdom.h)
 const prefix = sf('./my-styles.css')
 
 const tree = hx`
-  <section className=${prefix}>
+  <section class=${prefix}>
     <h1>My beautiful, centered title</h1>
   </section>
 `
@@ -174,7 +174,7 @@ const prefix = sf`
 `
 
 const tree = hx`
-  <section className=${prefix}>
+  <section class=${prefix}>
     <h1>My beautiful, centered title</h1>
   </section>
 `
