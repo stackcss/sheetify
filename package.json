@@ -1,6 +1,6 @@
 {
   "name": "sheetify",
-  "version": "4.1.2",
+  "version": "5.0.0",
   "description": "Modular CSS bundler",
   "repository": "sheetify/sheetify",
   "license": "MIT",
