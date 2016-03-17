@@ -103,4 +103,24 @@ test('prefix', function (t) {
       return ws
     }
   })
+
+  t.test('should return a prefix when an empty string is passed', function (t) {
+    t.plan(1)
+
+    const ws = concat(function (buf) {
+      const res = String(buf).trim()
+      t.equal(res, '', 'css is equal')
+    })
+
+    const bOpts = { browserField: false }
+    const bpath = path.join(__dirname, 'fixtures/prefix-empty-source.js')
+    browserify(bpath, bOpts)
+      .transform(transform)
+      .plugin('css-extract', { out: outFn })
+      .bundle()
+
+    function outFn () {
+      return ws
+    }
+  })
 })
