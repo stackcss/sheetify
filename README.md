@@ -85,6 +85,25 @@ const tree = hx`
 document.body.appendChild(vdom.create(tree))
 ```
 
+By using `:host` we are able to provide styles for the parent element:
+
+```css
+._60ed23ec9f {
+  background-color: blue;
+}
+
+._60ed23ec9f > h1 {
+  text-decoration: underline;
+}
+```
+
+```html
+<section class="_60ed23ec9f">
+  <h1>My beautiful, centered title</h1>
+</style>
+```
+
+
 ## External files
 To include an external CSS file you can pass a path to sheetify as
 `sheetify('./my-file.css')`:
