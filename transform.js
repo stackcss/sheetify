@@ -51,10 +51,16 @@ function transform (filename, options) {
     // but tough times call for tough measure. Please don't
     // judge us too harshly, we'll work on perf ✨soon✨ -yw
     const nodes = []
-    var mname = null
     const src = Buffer.concat(bufs).toString('utf8')
-    const tmpAst = falafel(src, { ecmaVersion: 6 }, identifyModuleName)
-    const ast = falafel(tmpAst.toString(), { ecmaVersion: 6 }, extractNodes)
+    var mname = null
+    var ast
+
+    try {
+      const tmpAst = falafel(src, { ecmaVersion: 6 }, identifyModuleName)
+      ast = falafel(tmpAst.toString(), { ecmaVersion: 6 }, extractNodes)
+    } catch (err) {
+      return self.emit('error', err)
+    }
 
     // transform all detected nodes and
     // close stream when done

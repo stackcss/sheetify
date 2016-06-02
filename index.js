@@ -38,8 +38,14 @@ function parseCss (src, filename, prefix, options, done) {
     if (err) return done(err)
     var p = postcss()
     if (options.global !== true) p = p.use(cssPrefix('.' + prefix))
-    css = p.process(css).toString()
-    return done(null, css, prefix)
+
+    try {
+      css = p.process(css).toString()
+
+      return done(null, css, prefix)
+    } catch (e) {
+      return done(e)
+    }
   })
 
   // apply transforms to a string of css,
