@@ -14,6 +14,7 @@ function sheetify (src, filename, options, done) {
   // handle tagged template calls directly from Node
   if (Array.isArray(src)) src = src.join('')
   assert.equal(typeof src, 'string', 'src must be a string')
+  src = src.trim()
 
   const prefix = '_' + crypto.createHash('md5')
     .update(src)
