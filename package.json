@@ -2,7 +2,7 @@
   "name": "sheetify",
   "version": "5.0.3",
   "description": "Modular CSS bundler",
-  "repository": "sheetify/sheetify",
+  "repository": "stackcss/sheetify",
   "license": "MIT",
   "scripts": {
     "deps": "dependency-check . --entry transform.js . && dependency-check . --entry transform.js --extra --no-dev -i insert-css",
