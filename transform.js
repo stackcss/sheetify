@@ -116,6 +116,7 @@ function transform (filename, options) {
         var resolvePath = cssResolve(node.arguments[0].value, {
           basedir: path.dirname(filename)
         })
+        self.emit('file', resolvePath)
       } catch (err) {
         return self.emit('error', err)
       }
