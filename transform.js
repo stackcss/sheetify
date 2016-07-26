@@ -16,6 +16,8 @@ module.exports = transform
 // inline sheetify transform for browserify
 // obj -> (str, opts) -> str
 function transform (filename, options) {
+  if (/\.json$/i.test(filename)) return through()
+
   const opts = xtend(options || {
     basedir: process.cwd(),
     use: [],
