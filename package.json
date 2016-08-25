@@ -28,6 +28,7 @@
     "postcss": "^5.0.10",
     "postcss-prefix": "^1.0.3",
     "resolve": "^1.1.7",
+    "stack-trace": "0.0.9",
     "static-eval": "^0.2.4",
     "style-resolve": "^1.0.0",
     "through2": "^2.0.0",
