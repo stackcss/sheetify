@@ -19,6 +19,7 @@ function sheetify (src, filename, options, done) {
   const isTemplate = Array.isArray(src)
   if (isTemplate) src = src.join('')
   assert.equal(typeof src, 'string', 'src must be a string')
+  src = src.trim()
 
   // Ensure prefix is always correct when run from inside node
   let css
@@ -26,7 +27,7 @@ function sheetify (src, filename, options, done) {
      // module or file name via tagged template call
     const callerDirname = path.dirname(stackTrace.get()[1].getFileName())
     const resolved = cssResolve(src, { basedir: callerDirname })
-    css = fs.readFileSync(resolved, 'utf8')
+    css = fs.readFileSync(resolved, 'utf8').trim()
   } else {
     // it better be some css
     css = src
@@ -39,7 +40,7 @@ function sheetify (src, filename, options, done) {
     .slice(0, 8)
 
   // only parse if in a browserify transform
-  if (filename) parseCss(src.trim(), filename, prefix, options, done)
+  if (filename) parseCss(src, filename, prefix, options, done)
 
   return prefix
 }
