@@ -39,7 +39,7 @@ function sheetify (src, filename, options, done) {
     .slice(0, 8)
 
   // only parse if in a browserify transform
-  if (filename) parseCss(src, filename, prefix, options, done)
+  if (filename) parseCss(src.trim(), filename, prefix, options, done)
 
   return prefix
 }
