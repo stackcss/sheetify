@@ -76,7 +76,7 @@ test('prefix', function (t) {
       vm.runInNewContext(src.toString(), c)
 
       function log (msg) {
-        t.equal(msg, '_c284eb7d', 'echoes prefix')
+        t.equal(msg, '_0081131d', 'echoes prefix')
       }
     }
   })
