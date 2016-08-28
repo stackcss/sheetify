@@ -43,6 +43,7 @@
     "concat-stream": "^1.5.1",
     "css-extract": "^1.1.2",
     "css-type-base": "^1.0.2",
+    "css-wipe": "^4.2.2",
     "dependency-check": "^2.5.1",
     "insert-css": "^1.0.0",
     "istanbul": "^0.3.19",

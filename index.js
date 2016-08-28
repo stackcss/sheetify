@@ -11,6 +11,7 @@ const fs = require('fs')
 const path = require('path')
 
 module.exports = sheetify
+module.exports.getPrefix = getPrefix
 
 // transform css
 // (str, str, obj?, fn) -> str
@@ -27,21 +28,25 @@ function sheetify (src, filename, options, done) {
      // module or file name via tagged template call w or w/out options
     const callerDirname = path.dirname(stackTrace.get()[1].getFileName())
     const resolved = cssResolve(src, { basedir: callerDirname })
-    css = fs.readFileSync(resolved, 'utf8').trim()
+    css = fs.readFileSync(resolved, 'utf8')
   } else {
     // it better be some css
     css = src
   }
 
-  css = css.trim()
-  const prefix = '_' + crypto.createHash('md5')
-    .update(css)
-    .digest('hex')
-    .slice(0, 8)
+  const prefix = getPrefix(css)
 
   // only parse if in a browserify transform
   if (typeof filename === 'string') parseCss(src, filename, prefix, options, done)
 
+  return prefix
+}
+
+function getPrefix (css) {
+  const prefix = '_' + crypto.createHash('md5')
+    .update(css.trim())
+    .digest('hex')
+    .slice(0, 8)
   return prefix
 }
 
