@@ -28,7 +28,6 @@ test('prefix', function (t) {
   t.test('should return a prefix with a module name in Node', function (t) {
     t.plan(1)
     const expath = cssResolve('css-wipe')
-    console.log(expath)
     const expected = sheetify.getPrefix(fs.readFileSync(expath, 'utf8'))
     const prefix = sheetify('css-wipe')
     t.equal(prefix, expected, 'prefix is equal')
