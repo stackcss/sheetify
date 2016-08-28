@@ -5,25 +5,48 @@ const postcss = require('postcss')
 const assert = require('assert')
 const crypto = require('crypto')
 const xtend = require('xtend')
+const stackTrace = require('stack-trace')
+const cssResolve = require('style-resolve').sync
+const fs = require('fs')
+const path = require('path')
 
 module.exports = sheetify
+module.exports.getPrefix = getPrefix
 
 // transform css
 // (str, str, obj?, fn) -> str
 function sheetify (src, filename, options, done) {
   // handle tagged template calls directly from Node
-  if (Array.isArray(src)) src = src.join('')
+  const isTemplate = Array.isArray(src)
+  if (isTemplate) src = src.join('')
   assert.equal(typeof src, 'string', 'src must be a string')
   src = src.trim()
 
-  const prefix = '_' + crypto.createHash('md5')
-    .update(src)
-    .digest('hex')
-    .slice(0, 8)
+  // Ensure prefix is always correct when run from inside node
+  var css
+  if (!isTemplate && (!filename || typeof filename === 'object')) {
+     // module or file name via tagged template call w or w/out options
+    const callerDirname = path.dirname(stackTrace.get()[1].getFileName())
+    const resolved = cssResolve(src, { basedir: callerDirname })
+    css = fs.readFileSync(resolved, 'utf8')
+  } else {
+    // it better be some css
+    css = src
+  }
+
+  const prefix = getPrefix(css)
 
   // only parse if in a browserify transform
-  if (filename) parseCss(src, filename, prefix, options, done)
+  if (typeof filename === 'string') parseCss(src, filename, prefix, options, done)
 
+  return prefix
+}
+
+function getPrefix (css) {
+  const prefix = '_' + crypto.createHash('md5')
+    .update(css.trim())
+    .digest('hex')
+    .slice(0, 8)
   return prefix
 }
 

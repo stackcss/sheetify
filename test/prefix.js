@@ -4,6 +4,7 @@ const test = require('tape')
 const path = require('path')
 const fs = require('fs')
 const vm = require('vm')
+const cssResolve = require('style-resolve').sync
 
 const transform = require('../transform')
 const sheetify = require('..')
@@ -11,8 +12,25 @@ const sheetify = require('..')
 test('prefix', function (t) {
   t.test('should return a prefix when called in Node', function (t) {
     t.plan(1)
-    const prefix = sheetify('.foo { color: blue; }')
-    t.equal(prefix, '_d1b3f246', 'prefix is equal')
+    const prefix = sheetify`.foo { color: blue; }`
+    const expected = sheetify.getPrefix('.foo { color: blue; }')
+    t.equal(prefix, expected, 'prefix is equal')
+  })
+
+  t.test('should return a prefix with relative path in Node', function (t) {
+    t.plan(1)
+    const expath = path.join(__dirname, 'fixtures/prefix-import-source.css')
+    const expected = sheetify.getPrefix(fs.readFileSync(expath, 'utf8'))
+    const prefix = sheetify('./fixtures/prefix-import-source.css')
+    t.equal(prefix, expected, 'prefix is equal')
+  })
+
+  t.test('should return a prefix with a module name in Node', function (t) {
+    t.plan(1)
+    const expath = cssResolve('css-wipe')
+    const expected = sheetify.getPrefix(fs.readFileSync(expath, 'utf8'))
+    const prefix = sheetify('css-wipe')
+    t.equal(prefix, expected, 'prefix is equal')
   })
 
   t.test('should prefix and inline template strings', function (t) {
