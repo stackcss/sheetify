@@ -1,7 +1,8 @@
 node_js:
 - "4"
 - "5"
+- "node"
 sudo: false
 language: node_js
-script: "npm install insert-css && npm run test:cov"
-after_script: "npm i -g codecov.io && cat ./coverage/lcov.info | codecov"
+script: "npm run test:cov"
+after_script: "cat ./coverage/lcov.info | codecov"
