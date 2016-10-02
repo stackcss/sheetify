@@ -52,7 +52,7 @@ CSS classes are namespaced based on the content hash:
 
 And the rendered HTML includes the namespace:
 ```html
-<section class="_60ed23e">
+<section class="_60ed23ec9f">
   <h1>My beautiful, centered title</h1>
 </section>
 ```
