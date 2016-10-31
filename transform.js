@@ -57,6 +57,12 @@ function transform (filename, options) {
     var mname = null
     var ast
 
+    if (src.indexOf('sheetify') === -1) {
+      self.push(src)
+      self.push(null)
+      return
+    }
+
     try {
       const tmpAst = falafel(src, { ecmaVersion: 6 }, identifyModuleName)
       ast = falafel(tmpAst.toString(), { ecmaVersion: 6 }, extractNodes)

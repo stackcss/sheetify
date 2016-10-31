@@ -45,6 +45,7 @@
     "css-type-base": "^1.0.2",
     "css-wipe": "^4.2.2",
     "dependency-check": "^2.5.1",
+    "from2-string": "^1.1.0",
     "insert-css": "^1.0.0",
     "istanbul": "^0.4.5",
     "jsdom": "^9.4.2",
