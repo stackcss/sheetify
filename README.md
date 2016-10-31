@@ -18,24 +18,22 @@ like [browserify](http://browserify.org/) does.
 ## Example
 Given some inline CSS:
 ```js
-const vdom = require('virtual-dom')
-const hyperx = require('hyperx')
-const sf = require('sheetify')
-const hx = hyperx(vdom.h)
+const css = require('sheetify')
+const html = require('bel')
 
-const prefix = sf`
-  h1 {
+const prefix = css`
+  :host > h1 {
     text-align: center;
   }
 `
 
-const tree = hx`
+const tree = html`
   <section class=${prefix}>
     <h1>My beautiful, centered title</h1>
   </section>
 `
 
-document.body.appendChild(vdom.create(tree))
+document.body.appendChild(tree)
 ```
 
 Compile with browserify using `-t sheetify/transform`:
@@ -61,12 +59,10 @@ And the rendered HTML includes the namespace:
 The element that gets a prefix applied can be styled using the [`:host`
 pseudoselector][1]:
 ```js
-const vdom = require('virtual-dom')
-const hyperx = require('hyperx')
-const sf = require('sheetify')
-const hx = hyperx(vdom.h)
+const css = require('sheetify')
+const html = require('bel')
 
-const prefix = sf`
+const prefix = css`
   :host {
     background-color: blue;
   }
@@ -76,13 +72,13 @@ const prefix = sf`
   }
 `
 
-const tree = hx`
+const tree = html`
   <section class=${prefix}>
     <h1>My beautiful, centered title</h1>
   </section>
 `
 
-document.body.appendChild(vdom.create(tree))
+document.body.appendChild(tree)
 ```
 
 By using `:host` we are able to provide styles for the parent element:
@@ -108,38 +104,36 @@ By using `:host` we are able to provide styles for the parent element:
 To include an external CSS file you can pass a path to sheetify as
 `sheetify('./my-file.css')`:
 ```js
-const vdom = require('virtual-dom')
-const hyperx = require('hyperx')
-const sf = require('sheetify')
-const hx = hyperx(vdom.h)
+const css = require('sheetify')
+const html = require('bel')
 
-const prefix = sf('./my-styles.css')
+const prefix = css('./my-styles.css')
 
-const tree = hx`
+const tree = html`
   <section class=${prefix}>
     <h1>My beautiful, centered title</h1>
   </section>
 `
 
-document.body.appendChild(vdom.create(tree))
+document.body.appendChild(tree)
 ```
 
 ## Use npm packages
 To consume a package from npm that has `.css` file in its `main` or `style`
 field:
 ```js
-const sf = require('sheetify')
+const css = require('sheetify')
 
-sf('normalize.css')
+css('normalize.css')
 ```
 Packages from npm will not be namespaced by default.
 
 ## Toggle namespaces
 To toggle namespaces for external files or npm packages:
 ```js
-const sf = require('sheetify')
+const css = require('sheetify')
 
-sf('./my-file.css', { global: true })
+css('./my-file.css', { global: true })
 ```
 Be aware that when you toggle the namespace, the `:host` element matches won't
 work anymore because the class it targets no longer exists. Only use this
@@ -163,24 +157,22 @@ For example include
 [sheetify-cssnext](https://github.com/sheetify/sheetify-cssnext) to support
 autoprefixing, variables and more:
 ```js
-const vdom = require('virtual-dom')
-const hyperx = require('hyperx')
-const sf = require('sheetify')
-const hx = hyperx(vdom.h)
+const css = require('sheetify')
+const html = require('bel')
 
-const prefix = sf`
+const prefix = css`
   h1 {
     transform: translate(0, 0);
   }
 `
 
-const tree = hx`
+const tree = html`
   <section class=${prefix}>
     <h1>My beautiful, centered title</h1>
   </section>
 `
 
-document.body.appendChild(vdom.create(tree))
+document.body.appendChild(tree)
 ```
 
 Compile with browserify using `-t [ sheetify/transform -u sheetify-cssnext ]`:
