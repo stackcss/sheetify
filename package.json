@@ -23,7 +23,6 @@
   "dependencies": {
     "falafel": "^1.2.0",
     "insert-css": "^1.0.0",
-    "is-stream": "^1.0.1",
     "map-limit": "0.0.1",
     "postcss": "^5.0.10",
     "postcss-prefix": "^1.0.3",

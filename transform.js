@@ -1,10 +1,8 @@
 const cssResolve = require('style-resolve').sync
 const staticEval = require('static-eval')
 const mapLimit = require('map-limit')
-const isStream = require('is-stream')
 const through = require('through2')
 const falafel = require('falafel')
-const assert = require('assert')
 const xtend = require('xtend')
 const path = require('path')
 const fs = require('fs')
@@ -24,14 +22,7 @@ function transform (filename, options) {
     out: ''
   })
 
-  if (opts.o) opts.out = opts.o
   opts.use = [].concat(opts.use || []).concat(opts.u || [])
-
-  // argv parsing
-  if (opts.out) {
-    if (typeof opts.out === 'string') opts.out = path.resolve(opts.out)
-    else assert.ok(isStream(opts.out), 'opts.out must be a path or a stream')
-  }
 
   const bufs = []
   const transformStream = through(write, end)
