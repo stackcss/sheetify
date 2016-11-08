@@ -145,7 +145,7 @@ function transform (filename, options) {
       sheetify(val.css, val.filename, val.opts, function (err, css, prefix) {
         if (err) return done(err)
         const str = [
-          "((require('insert-css')(" + JSON.stringify(css) + ')',
+          "((require('sheetify/insert')(" + JSON.stringify(css) + ')',
           ' || true) && ' + JSON.stringify(prefix) + ')'
         ].join('')
 
