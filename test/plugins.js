@@ -1,5 +1,6 @@
 const browserify = require('browserify')
 const concat = require('concat-stream')
+const through = require('through2')
 const test = require('tape')
 const path = require('path')
 const fs = require('fs')
@@ -23,6 +24,13 @@ test('plugins', function (t) {
     browserify(bpath, bOpts)
       .transform(sheetify, {
         use: [ [ 'sheetify-cssnext', { sourcemap: false } ] ]
+      })
+      .transform(function (file) {
+        return through(function (buf, enc, next) {
+          const str = buf.toString('utf8')
+          this.push(str.replace(/sheetify\/insert/, 'insert-css'))
+          next()
+        })
       })
       .plugin('css-extract', { out: outFn })
       .bundle()
