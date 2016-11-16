@@ -1,7 +1,7 @@
 const sf = require('sheetify')
 
 const prefix = sf`
-  hello, world {
+  :host .hello, :host .world {
     transform: translate(0, 0);
   }
 `

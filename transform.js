@@ -116,8 +116,6 @@ function transform (filename, options) {
       if (node.type !== 'CallExpression') return
       if (!node.callee || node.callee.type !== 'Identifier') return
       if (node.callee.name !== mname) return
-      const isLocalFile = /^\.{0,2}\//.test(node.arguments[0].value)
-      const localOptions = { global: !isLocalFile }
       try {
         var resolvePath = cssResolve(node.arguments[0].value, {
           basedir: path.dirname(filename)
@@ -127,9 +125,9 @@ function transform (filename, options) {
         return self.emit('error', err)
       }
 
-      const iOpts = node.arguments[1]
-        ? xtend(opts, localOptions, staticEval(node.arguments[1]))
-        : xtend(opts, localOptions)
+      const iOpts = (node.arguments[1])
+        ? xtend(opts, staticEval(node.arguments[1]))
+        : opts
 
       const val = {
         filename: resolvePath,
