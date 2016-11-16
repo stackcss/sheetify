@@ -61,7 +61,7 @@ test('prefix', function (t) {
       vm.runInNewContext(src.toString(), c)
 
       function log (msg) {
-        t.equal(msg, '_0081131d', 'echoes prefix')
+        t.equal(msg, '_f918f624', 'echoes prefix')
       }
     }
   })
@@ -94,31 +94,8 @@ test('prefix', function (t) {
       vm.runInNewContext(src.toString(), c)
 
       function log (msg) {
-        t.equal(msg, '_0081131d', 'echoes prefix')
+        t.equal(msg, '_f918f624', 'echoes prefix')
       }
-    }
-  })
-
-  t.test('should disable prefixing when global:true', function (t) {
-    t.plan(1)
-
-    const expath = path.join(__dirname, 'fixtures/prefix-global-expected.css')
-    const expected = fs.readFileSync(expath, 'utf8').trim()
-
-    const ws = concat(function (buf) {
-      const res = String(buf).trim()
-      t.equal(res, expected, 'css is equal')
-    })
-
-    const bOpts = { browserField: false }
-    const bpath = path.join(__dirname, 'fixtures/prefix-global-source.js')
-    browserify(bpath, bOpts)
-      .transform(transform)
-      .plugin('css-extract', { out: outFn })
-      .bundle()
-
-    function outFn () {
-      return ws
     }
   })
 })
