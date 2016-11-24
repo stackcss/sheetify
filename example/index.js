@@ -1,4 +1,4 @@
-const sheetify = require('sheetify')
+const sheetify = require('..')
 const domify = require('domify')
 const prefix = sheetify('./index.css')
 
