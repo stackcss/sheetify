@@ -1,8 +1,8 @@
-const test = require('tape')
-const join = require('path').join
-const browserify = require('browserify')
+var test = require('tape')
+var join = require('path').join
+var browserify = require('browserify')
 
-const transform = require('../transform')
+var transform = require('../transform')
 
 test('JSON files', function (t) {
   t.plan(2)

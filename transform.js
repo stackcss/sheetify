@@ -1,13 +1,13 @@
-const cssResolve = require('style-resolve').sync
-const staticEval = require('static-eval')
-const mapLimit = require('map-limit')
-const through = require('through2')
-const falafel = require('falafel')
-const xtend = require('xtend')
-const path = require('path')
-const fs = require('fs')
+var cssResolve = require('style-resolve').sync
+var staticEval = require('static-eval')
+var mapLimit = require('map-limit')
+var through = require('through2')
+var falafel = require('falafel')
+var xtend = require('xtend')
+var path = require('path')
+var fs = require('fs')
 
-const sheetify = require('./index')
+var sheetify = require('./index')
 
 module.exports = transform
 
@@ -16,7 +16,7 @@ module.exports = transform
 function transform (filename, options) {
   if (/\.json$/i.test(filename)) return through()
 
-  const opts = xtend(options || {
+  var opts = xtend(options || {
     basedir: process.cwd(),
     use: [],
     out: ''
@@ -24,8 +24,8 @@ function transform (filename, options) {
 
   opts.use = [].concat(opts.use || []).concat(opts.u || [])
 
-  const bufs = []
-  const transformStream = through(write, end)
+  var bufs = []
+  var transformStream = through(write, end)
   return transformStream
 
   // aggregate all AST nodes
@@ -38,13 +38,13 @@ function transform (filename, options) {
   // parse and push AST nodes
   // null -> null
   function end () {
-    const self = this
+    var self = this
 
     // cool, you've made it this far. We know this is gross,
     // but tough times call for tough measure. Please don't
     // judge us too harshly, we'll work on perf ✨soon✨ -yw
-    const nodes = []
-    const src = Buffer.concat(bufs).toString('utf8')
+    var nodes = []
+    var src = Buffer.concat(bufs).toString('utf8')
     var mname = null
     var ast
 
@@ -55,7 +55,7 @@ function transform (filename, options) {
     }
 
     try {
-      const tmpAst = falafel(src, { ecmaVersion: 6 }, identifyModuleName)
+      var tmpAst = falafel(src, { ecmaVersion: 6 }, identifyModuleName)
       ast = falafel(tmpAst.toString(), { ecmaVersion: 6 }, extractNodes)
     } catch (err) {
       return self.emit('error', err)
@@ -90,10 +90,10 @@ function transform (filename, options) {
       if (!node.parent || !node.parent.tag) return
       if (node.parent.tag.name !== mname) return
 
-      const css = [ node.quasis.map(cooked) ]
+      var css = [ node.quasis.map(cooked) ]
         .concat(node.expressions.map(expr)).join('').trim()
 
-      const val = {
+      var val = {
         css: css,
         filename: filename,
         opts: xtend(opts),
@@ -116,11 +116,11 @@ function transform (filename, options) {
         return self.emit('error', err)
       }
 
-      const iOpts = (node.arguments[1])
+      var iOpts = (node.arguments[1])
         ? xtend(opts, staticEval(node.arguments[1]))
         : opts
 
-      const val = {
+      var val = {
         filename: resolvePath,
         opts: iOpts,
         node: node
@@ -144,12 +144,12 @@ function transform (filename, options) {
     function handleCss (val) {
       sheetify(val.css, val.filename, val.opts, function (err, css, prefix) {
         if (err) return done(err)
-        const str = [
+        var str = [
           "((require('sheetify/insert')(" + JSON.stringify(css) + ')',
           ' || true) && ' + JSON.stringify(prefix) + ')'
         ].join('')
 
-        const lolSemicolon = (val.node.parent.type === 'VariableDeclarator')
+        var lolSemicolon = (val.node.parent.type === 'VariableDeclarator')
           ? ''
           : ';'
         val.node.update(lolSemicolon + str)

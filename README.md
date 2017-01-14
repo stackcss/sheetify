@@ -18,16 +18,16 @@ like [browserify](http://browserify.org/) does.
 ## Example
 Given some inline CSS:
 ```js
-const css = require('sheetify')
-const html = require('bel')
+var css = require('sheetify')
+var html = require('bel')
 
-const prefix = css`
+var prefix = css`
   :host > h1 {
     text-align: center;
   }
 `
 
-const tree = html`
+var tree = html`
   <section class=${prefix}>
     <h1>My beautiful, centered title</h1>
   </section>
@@ -59,10 +59,10 @@ And the rendered HTML includes the namespace:
 The element that gets a prefix applied can be styled using the [`:host`
 pseudoselector][1]:
 ```js
-const css = require('sheetify')
-const html = require('bel')
+var css = require('sheetify')
+var html = require('bel')
 
-const prefix = css`
+var prefix = css`
   :host {
     background-color: blue;
   }
@@ -72,7 +72,7 @@ const prefix = css`
   }
 `
 
-const tree = html`
+var tree = html`
   <section class=${prefix}>
     <h1>My beautiful, centered title</h1>
   </section>
@@ -104,12 +104,12 @@ By using `:host` we are able to provide styles for the parent element:
 To include an external CSS file you can pass a path to sheetify as
 `sheetify('./my-file.css')`:
 ```js
-const css = require('sheetify')
-const html = require('bel')
+var css = require('sheetify')
+var html = require('bel')
 
-const prefix = css('./my-styles.css')
+var prefix = css('./my-styles.css')
 
-const tree = html`
+var tree = html`
   <section class=${prefix}>
     <h1>My beautiful, centered title</h1>
   </section>
@@ -122,7 +122,7 @@ document.body.appendChild(tree)
 To consume a package from npm that has `.css` file in its `main` or `style`
 field:
 ```js
-const css = require('sheetify')
+var css = require('sheetify')
 
 css('normalize.css')
 ```
@@ -146,16 +146,16 @@ For example include
 [sheetify-cssnext](https://github.com/sheetify/sheetify-cssnext) to support
 autoprefixing, variables and more:
 ```js
-const css = require('sheetify')
-const html = require('bel')
+var css = require('sheetify')
+var html = require('bel')
 
-const prefix = css`
+var prefix = css`
   h1 {
     transform: translate(0, 0);
   }
 `
 
-const tree = html`
+var tree = html`
   <section class=${prefix}>
     <h1>My beautiful, centered title</h1>
   </section>
@@ -191,9 +191,9 @@ $ browserify -t [ sheetify/transform -u sheetify-cssnext ] index.js > bundle.js
 Or the equivalent options by passing in a configuration object in the
 JavaScript API:
 ```js
-const browserify = require('browserify')
+var browserify = require('browserify')
 
-const b = browserify(path.join(__dirname, 'transform/source.js'))
+var b = browserify(path.join(__dirname, 'transform/source.js'))
 b.transform('sheetify/transform', { use: [ 'sheetify-cssnext' ] })
 b.bundle().pipe(process.stdout)
 ```

@@ -1,31 +1,31 @@
-const browserify = require('browserify')
-const concat = require('concat-stream')
-const through = require('through2')
-const test = require('tape')
-const path = require('path')
-const fs = require('fs')
+var browserify = require('browserify')
+var concat = require('concat-stream')
+var through = require('through2')
+var test = require('tape')
+var path = require('path')
+var fs = require('fs')
 
-const sheetify = require(path.join(__dirname, '../transform'))
+var sheetify = require(path.join(__dirname, '../transform'))
 
 test('npm import', function (t) {
   t.test('should import npm packages', function (t) {
     t.plan(1)
 
-    const expath = require.resolve('css-type-base/index.css')
-    const expected = fs.readFileSync(expath, 'utf8').trim()
+    var expath = require.resolve('css-type-base/index.css')
+    var expected = fs.readFileSync(expath, 'utf8').trim()
 
-    const ws = concat(function (buf) {
-      const res = String(buf).trim()
+    var ws = concat(function (buf) {
+      var res = String(buf).trim()
       t.equal(res, expected, 'package was imported')
     })
 
-    const bOpts = { browserField: false }
-    const bpath = path.join(__dirname, 'fixtures/import-source.js')
+    var bOpts = { browserField: false }
+    var bpath = path.join(__dirname, 'fixtures/import-source.js')
     browserify(bpath, bOpts)
       .transform(sheetify)
       .transform(function (file) {
         return through(function (buf, enc, next) {
-          const str = buf.toString('utf8')
+          var str = buf.toString('utf8')
           this.push(str.replace(/sheetify\/insert/, 'insert-css'))
           next()
         })
@@ -41,12 +41,12 @@ test('npm import', function (t) {
   t.test('should emit an error on broken import', function (t) {
     t.plan(1)
 
-    const inpath = path.join(__dirname, 'fixtures/import-broken-source.js')
-    const bOpts = { browserField: false }
-    const b = browserify(inpath, bOpts)
+    var inpath = path.join(__dirname, 'fixtures/import-broken-source.js')
+    var bOpts = { browserField: false }
+    var b = browserify(inpath, bOpts)
     b.transform(sheetify)
 
-    const r = b.bundle()
+    var r = b.bundle()
     r.resume()
     r.on('error', function (e) {
       t.ok(/Cannot find module/.test(e), 'emits an error')

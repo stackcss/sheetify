@@ -1,4 +1,4 @@
-const sf = require('sheetify')
+var sf = require('sheetify')
 
-const prefix = sf('./prefix-import-source.css')
+var prefix = sf('./prefix-import-source.css')
 console.log(prefix)

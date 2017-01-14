@@ -1,6 +1,6 @@
-const sheetify = require('..')
-const domify = require('domify')
-const prefix = sheetify('./index.css')
+var sheetify = require('..')
+var domify = require('domify')
+var prefix = sheetify('./index.css')
 
 document.body.appendChild(domify(`
   <div class="${prefix}">

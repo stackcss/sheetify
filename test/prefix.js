@@ -1,57 +1,57 @@
-const browserify = require('browserify')
-const concat = require('concat-stream')
-const through = require('through2')
-const test = require('tape')
-const path = require('path')
-const fs = require('fs')
-const vm = require('vm')
-const cssResolve = require('style-resolve').sync
+var browserify = require('browserify')
+var concat = require('concat-stream')
+var through = require('through2')
+var test = require('tape')
+var path = require('path')
+var fs = require('fs')
+var vm = require('vm')
+var cssResolve = require('style-resolve').sync
 
-const transform = require('../transform')
-const sheetify = require('..')
+var transform = require('../transform')
+var sheetify = require('..')
 
 test('prefix', function (t) {
   t.test('should return a prefix when called in Node', function (t) {
     t.plan(1)
-    const prefix = sheetify`.foo { color: blue; }`
-    const expected = sheetify.getPrefix('.foo { color: blue; }')
+    var prefix = sheetify`.foo { color: blue; }`
+    var expected = sheetify.getPrefix('.foo { color: blue; }')
     t.equal(prefix, expected, 'prefix is equal')
   })
 
   t.test('should return a prefix with relative path in Node', function (t) {
     t.plan(1)
-    const expath = path.join(__dirname, 'fixtures/prefix-import-source.css')
-    const expected = sheetify.getPrefix(fs.readFileSync(expath, 'utf8'))
-    const prefix = sheetify('./fixtures/prefix-import-source.css')
+    var expath = path.join(__dirname, 'fixtures/prefix-import-source.css')
+    var expected = sheetify.getPrefix(fs.readFileSync(expath, 'utf8'))
+    var prefix = sheetify('./fixtures/prefix-import-source.css')
     t.equal(prefix, expected, 'prefix is equal')
   })
 
   t.test('should return a prefix with a module name in Node', function (t) {
     t.plan(1)
-    const expath = cssResolve('css-wipe')
-    const expected = sheetify.getPrefix(fs.readFileSync(expath, 'utf8'))
-    const prefix = sheetify('css-wipe')
+    var expath = cssResolve('css-wipe')
+    var expected = sheetify.getPrefix(fs.readFileSync(expath, 'utf8'))
+    var prefix = sheetify('css-wipe')
     t.equal(prefix, expected, 'prefix is equal')
   })
 
   t.test('should prefix and inline template strings', function (t) {
     t.plan(3)
 
-    const expath = path.join(__dirname, 'fixtures/prefix-inline-expected.css')
-    const expected = fs.readFileSync(expath, 'utf8').trim()
+    var expath = path.join(__dirname, 'fixtures/prefix-inline-expected.css')
+    var expected = fs.readFileSync(expath, 'utf8').trim()
 
-    const ws = concat(function (buf) {
-      const res = String(buf).trim()
+    var ws = concat(function (buf) {
+      var res = String(buf).trim()
       t.equal(res, expected, 'css is equal')
     })
 
-    const bOpts = { browserField: false }
-    const bpath = path.join(__dirname, 'fixtures/prefix-inline-source.js')
+    var bOpts = { browserField: false }
+    var bpath = path.join(__dirname, 'fixtures/prefix-inline-source.js')
     browserify(bpath, bOpts)
       .transform(transform)
       .transform(function (file) {
         return through(function (buf, enc, next) {
-          const str = buf.toString('utf8')
+          var str = buf.toString('utf8')
           this.push(str.replace(/sheetify\/insert/, 'insert-css'))
           next()
         })
@@ -65,7 +65,7 @@ test('prefix', function (t) {
 
     function parseBundle (err, src) {
       t.ifError(err, 'no error')
-      const c = { console: { log: log } }
+      var c = { console: { log: log } }
       vm.runInNewContext(src.toString(), c)
 
       function log (msg) {
@@ -77,21 +77,21 @@ test('prefix', function (t) {
   t.test('should prefix and inline imported files', function (t) {
     t.plan(3)
 
-    const expath = path.join(__dirname, 'fixtures/prefix-import-expected.css')
-    const expected = fs.readFileSync(expath, 'utf8').trim()
+    var expath = path.join(__dirname, 'fixtures/prefix-import-expected.css')
+    var expected = fs.readFileSync(expath, 'utf8').trim()
 
-    const ws = concat(function (buf) {
-      const res = String(buf).trim()
+    var ws = concat(function (buf) {
+      var res = String(buf).trim()
       t.equal(res, expected, 'css is equal')
     })
 
-    const bOpts = { browserField: false }
-    const bpath = path.join(__dirname, 'fixtures/prefix-import-source.js')
+    var bOpts = { browserField: false }
+    var bpath = path.join(__dirname, 'fixtures/prefix-import-source.js')
     browserify(bpath, bOpts)
       .transform(transform)
       .transform(function (file) {
         return through(function (buf, enc, next) {
-          const str = buf.toString('utf8')
+          var str = buf.toString('utf8')
           this.push(str.replace(/sheetify\/insert/, 'insert-css'))
           next()
         })
@@ -105,7 +105,7 @@ test('prefix', function (t) {
 
     function parseBundle (err, src) {
       t.ifError(err, 'no error')
-      const c = { console: { log: log } }
+      var c = { console: { log: log } }
       vm.runInNewContext(src.toString(), c)
 
       function log (msg) {

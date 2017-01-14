@@ -1,3 +1,3 @@
-const sf = require('sheetify')
+var sf = require('sheetify')
 
 sf('./not-a-file.css')

@@ -1,6 +1,6 @@
-const sf = require('sheetify')
+var sf = require('sheetify')
 
-const prefix = sf`:host .foo {
+var prefix = sf`:host .foo {
   color: blue;
 }
 `

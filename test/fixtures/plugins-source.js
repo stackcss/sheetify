@@ -1,6 +1,6 @@
-const sf = require('sheetify')
+var sf = require('sheetify')
 
-const prefix = sf`
+var prefix = sf`
   :host .hello, :host .world {
     transform: translate(0, 0);
   }
