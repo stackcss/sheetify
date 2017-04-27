@@ -107,16 +107,16 @@ function transform (filename, options) {
       if (node.type !== 'CallExpression') return
       if (!node.callee || node.callee.type !== 'Identifier') return
       if (node.callee.name !== mname) return
+      var pathOpts = { basedir: path.dirname(filename) }
       try {
-        var resolvePath = cssResolve(node.arguments[0].value, {
-          basedir: path.dirname(filename)
-        })
-        self.emit('file', resolvePath)
+        var resolvePath = cssResolve(node.arguments[0].value, pathOpts)
       } catch (err) {
         return self.emit('error', err)
       }
 
-      const iOpts = (node.arguments[1])
+      self.emit('file', resolvePath)
+
+      const iOpts = node.arguments[1]
         ? xtend(opts, staticEval(node.arguments[1]))
         : opts
 
@@ -149,7 +149,9 @@ function transform (filename, options) {
           ' || true) && ' + JSON.stringify(prefix) + ')'
         ].join('')
 
-        const lolSemicolon = (val.node.parent.type === 'VariableDeclarator')
+        const parentNodeType = val.node.parent.type
+        const lolSemicolon = parentNodeType === 'VariableDeclarator' ||
+          parentNodeType === 'AssignmentExpression'
           ? ''
           : ';'
         val.node.update(lolSemicolon + str)
