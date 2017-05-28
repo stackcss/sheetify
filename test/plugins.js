@@ -5,7 +5,7 @@ const test = require('tape')
 const path = require('path')
 const fs = require('fs')
 
-const sheetify = require(path.join(__dirname, '../transform'))
+const sheetify = require('../')
 
 test('plugins', function (t) {
   t.test('should transform CSS', function (t) {

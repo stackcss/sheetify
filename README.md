@@ -36,9 +36,9 @@ const tree = html`
 document.body.appendChild(tree)
 ```
 
-Compile with browserify using `-t sheetify/transform`:
+Compile with browserify using `-t sheetify`:
 ```sh
-$ browserify -t sheetify/transform index.js > bundle.js
+$ browserify -t sheetify index.js > bundle.js
 ```
 
 CSS classes are namespaced based on the content hash:
@@ -133,7 +133,7 @@ To write the compiled CSS to a separate file, rather than keep it in the
 bundle use [css-extract][2]:
 ```sh
 $ browserify index.js \
-  -t [ sheetify/transform ] \
+  -t [ sheetify ] \
   -p [ css-extract -o bundle.css ] index.js \
   -o bundle.js
 ```
@@ -164,9 +164,9 @@ const tree = html`
 document.body.appendChild(tree)
 ```
 
-Compile with browserify using `-t [ sheetify/transform -u sheetify-cssnext ]`:
+Compile with browserify using `-t [ sheetify -u sheetify-cssnext ]`:
 ```sh
-$ browserify -t [ sheetify/transform -u sheetify-cssnext ] index.js > bundle.js
+$ browserify -t [ sheetify -u sheetify-cssnext ] index.js > bundle.js
 ```
 
 Transforms the CSS into:
@@ -185,7 +185,7 @@ The following plugins are available:
 Browserify transforms accept either flags from the command line using
 [subargs](https://github.com/substack/subarg):
 ```sh
-$ browserify -t [ sheetify/transform -u sheetify-cssnext ] index.js > bundle.js
+$ browserify -t [ sheetify -u sheetify-cssnext ] index.js > bundle.js
 ```
 
 Or the equivalent options by passing in a configuration object in the
@@ -194,7 +194,7 @@ JavaScript API:
 const browserify = require('browserify')
 
 const b = browserify(path.join(__dirname, 'transform/source.js'))
-b.transform('sheetify/transform', { use: [ 'sheetify-cssnext' ] })
+b.transform('sheetify', { use: [ 'sheetify-cssnext' ] })
 b.bundle().pipe(process.stdout)
 ```
 
