@@ -7,7 +7,6 @@ const fs = require('fs')
 const vm = require('vm')
 const cssResolve = require('style-resolve').sync
 
-const transform = require('../transform')
 const sheetify = require('..')
 
 test('prefix', function (t) {
@@ -48,7 +47,7 @@ test('prefix', function (t) {
     const bOpts = { browserField: false }
     const bpath = path.join(__dirname, 'fixtures/prefix-inline-source.js')
     browserify(bpath, bOpts)
-      .transform(transform)
+      .transform(sheetify)
       .transform(function (file) {
         return through(function (buf, enc, next) {
           const str = buf.toString('utf8')
@@ -88,7 +87,7 @@ test('prefix', function (t) {
     const bOpts = { browserField: false }
     const bpath = path.join(__dirname, 'fixtures/prefix-import-source.js')
     browserify(bpath, bOpts)
-      .transform(transform)
+      .transform(sheetify)
       .transform(function (file) {
         return through(function (buf, enc, next) {
           const str = buf.toString('utf8')

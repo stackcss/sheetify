@@ -16,6 +16,12 @@ module.exports.getPrefix = getPrefix
 // transform css
 // (str, str, obj?, fn) -> str
 function sheetify (src, filename, options, done) {
+  // browserify transform
+  if (typeof src === 'string' && !/\n/.test(src) && filename && filename._flags) {
+    var args = Array.prototype.slice.apply(arguments)
+    return require('./transform.js').apply(this, args)
+  }
+
   // handle tagged template calls directly from Node
   const isTemplate = Array.isArray(src)
   if (isTemplate) src = src.join('')

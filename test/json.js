@@ -2,14 +2,14 @@ const test = require('tape')
 const join = require('path').join
 const browserify = require('browserify')
 
-const transform = require('../transform')
+const sheetify = require('..')
 
 test('JSON files', function (t) {
   t.plan(2)
 
   browserify()
     .add(join(__dirname, 'fixtures', './example.json'))
-    .transform(transform)
+    .transform(sheetify)
     .bundle(function (err, code) {
       if (err) return t.end(err)
       code = String(code)
