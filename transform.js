@@ -55,8 +55,8 @@ function transform (filename, options) {
     }
 
     try {
-      const tmpAst = falafel(src, { ecmaVersion: 6 }, identifyModuleName)
-      ast = falafel(tmpAst.toString(), { ecmaVersion: 6 }, extractNodes)
+      const tmpAst = falafel(src, { ecmaVersion: 8 }, identifyModuleName)
+      ast = falafel(tmpAst.toString(), { ecmaVersion: 8 }, extractNodes)
     } catch (err) {
       return self.emit('error', err)
     }

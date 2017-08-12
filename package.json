@@ -21,7 +21,7 @@
     "css-modules"
   ],
   "dependencies": {
-    "falafel": "^1.2.0",
+    "falafel": "^2.1.0",
     "insert-css": "^2.0.0",
     "map-limit": "0.0.1",
     "postcss": "^5.0.10",
