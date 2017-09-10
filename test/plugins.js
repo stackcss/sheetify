@@ -1,4 +1,5 @@
 const browserify = require('browserify')
+const subarg = require('subarg')
 const concat = require('concat-stream')
 const through = require('through2')
 const test = require('tape')
@@ -38,5 +39,20 @@ test('plugins', function (t) {
     function outFn () {
       return ws
     }
+  })
+
+  t.test('should support subarg syntax', function (t) {
+    const bpath = path.join(__dirname, 'fixtures/plugins-source.js')
+    const bOpts = { browserField: false }
+    const sTransform = require.resolve('./fixtures/simple-plugin')
+    const args = subarg([ '--transform', '[', sTransform, '--replace', '.test{}', ']' ])
+    browserify(bpath, bOpts)
+      .transform(sheetify, args)
+      .exclude('sheetify/insert')
+      .bundle()
+      .pipe(concat(function (bundle) {
+        t.notEqual(bundle.indexOf(`require('sheetify/insert')(".test{}")`), -1)
+        t.end()
+      }))
   })
 })
