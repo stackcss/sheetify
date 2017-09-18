@@ -136,7 +136,7 @@ function transform (filename, options) {
   function iterate (val, done) {
     if (val.css) return handleCss(val)
 
-    if (val.filename.endsWith('.js')) {
+    if (/\.js$/.test(val.filename)) {
       delete require.cache[require.resolve(val.filename)]
       val.css = require(val.filename)
       handleCss(val)
