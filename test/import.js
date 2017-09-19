@@ -38,6 +38,35 @@ test('npm import', function (t) {
     }
   })
 
+  t.test('should import js file', function (t) {
+    t.plan(1)
+
+    const expected = require(path.join(__dirname, 'fixtures/example.js'))
+
+    const ws = concat(function (buf) {
+      const res = String(buf).trim()
+      t.equal(res, expected, 'package was imported')
+    })
+
+    const bOpts = { browserField: false }
+    const bpath = path.join(__dirname, 'fixtures/import-source-js.js')
+    browserify(bpath, bOpts)
+      .transform(sheetify)
+      .transform(function (file) {
+        return through(function (buf, enc, next) {
+          const str = buf.toString('utf8')
+          this.push(str.replace(/sheetify\/insert/, 'insert-css'))
+          next()
+        })
+      })
+      .plugin('css-extract', { out: outFn })
+      .bundle()
+
+    function outFn () {
+      return ws
+    }
+  })
+
   t.test('should emit an error on broken import', function (t) {
     t.plan(1)
 

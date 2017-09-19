@@ -135,11 +135,18 @@ function transform (filename, options) {
   // (obj, fn) -> null
   function iterate (val, done) {
     if (val.css) return handleCss(val)
-    fs.readFile(val.filename, 'utf8', function (err, css) {
-      if (err) return done(err)
-      val.css = css
+
+    if (/\.js$/.test(val.filename)) {
+      delete require.cache[require.resolve(val.filename)]
+      val.css = require(val.filename)
       handleCss(val)
-    })
+    } else {
+      fs.readFile(val.filename, 'utf8', function (err, css) {
+        if (err) return done(err)
+        val.css = css
+        handleCss(val)
+      })
+    }
 
     function handleCss (val) {
       sheetify(val.css, val.filename, val.opts, function (err, css, prefix) {
