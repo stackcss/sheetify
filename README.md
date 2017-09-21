@@ -11,7 +11,7 @@ like [browserify](http://browserify.org/) does.
 ## Features
 - __clarity:__ namespace CSS, no more need for naming schemes
 - __modularity:__ import and reuse CSS packages from npm
-- __extensibility:__ transform CSS using existing plugins, or write your own
+- __extensibility:__ transform CSS using existing transforms, or write your own
 - __transparency:__ inline CSS in your views
 - __simplicity:__ tiny API surface and a minimal code base
 
@@ -140,8 +140,8 @@ $ browserify index.js \
 [css-extract][2] can also write to a stream from the JS api, look at the
 documentation to see how.
 
-## Plugins
-Sheetify uses [plugins](#plugins) that take CSS and apply a transform.
+## Transforms
+Sheetify uses [transforms](#transforms) that take CSS and apply a transform.
 For example include
 [sheetify-cssnext](https://github.com/sheetify/sheetify-cssnext) to support
 autoprefixing, variables and more:
@@ -164,9 +164,9 @@ const tree = html`
 document.body.appendChild(tree)
 ```
 
-Compile with browserify using `-t [ sheetify -u sheetify-cssnext ]`:
+Compile with browserify using `-t [ sheetify -t sheetify-cssnext ]`:
 ```sh
-$ browserify -t [ sheetify -u sheetify-cssnext ] index.js > bundle.js
+$ browserify -t [ sheetify -t sheetify-cssnext ] index.js > bundle.js
 ```
 
 Transforms the CSS into:
@@ -177,15 +177,11 @@ h1 {
 }
 ```
 
-The following plugins are available:
-- [sheetify-cssnext](https://github.com/sheetify/sheetify-cssnext) - use
-  tomorrow's CSS syntax today
-
 ## API
 Browserify transforms accept either flags from the command line using
 [subargs](https://github.com/substack/subarg):
 ```sh
-$ browserify -t [ sheetify -u sheetify-cssnext ] index.js > bundle.js
+$ browserify -t [ sheetify -t sheetify-cssnext ] index.js > bundle.js
 ```
 
 Or the equivalent options by passing in a configuration object in the
@@ -194,14 +190,14 @@ JavaScript API:
 const browserify = require('browserify')
 
 const b = browserify(path.join(__dirname, 'transform/source.js'))
-b.transform('sheetify', { use: [ 'sheetify-cssnext' ] })
+b.transform('sheetify', { transform: [ 'sheetify-cssnext' ] })
 b.bundle().pipe(process.stdout)
 ```
 
 The following options are available:
 ```txt
 Options:
-  -u, --use    Consume a sheetify plugin
+  -t, --transform    Consume a sheetify transform
 ```
 
 ## FAQ

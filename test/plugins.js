@@ -23,7 +23,7 @@ test('plugins', function (t) {
     const bpath = path.join(__dirname, 'fixtures/plugins-source.js')
     browserify(bpath, bOpts)
       .transform(sheetify, {
-        use: [ [ 'sheetify-cssnext', { sourcemap: false } ] ]
+        transform: [ [ 'sheetify-cssnext', { sourcemap: false } ] ]
       })
       .transform(function (file) {
         return through(function (buf, enc, next) {

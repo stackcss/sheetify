@@ -18,11 +18,11 @@ function transform (filename, options) {
 
   const opts = xtend(options || {
     basedir: process.cwd(),
-    use: [],
+    transform: [],
     out: ''
   })
 
-  opts.use = [].concat(opts.use || []).concat(opts.u || [])
+  opts.transform = [].concat(opts.transform || []).concat(opts.t || [])
 
   const bufs = []
   const transformStream = through(write, end)

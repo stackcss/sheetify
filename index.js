@@ -82,8 +82,8 @@ function parseCss (src, filename, prefix, options, done) {
   // one at the time
   // (str, str, obj, fn) -> null
   function applyTransforms (filename, src, options, done) {
-    options.use = [].concat(options.use || []).concat(options.u || [])
-    mapLimit(options.use, 1, iterate, function (err) {
+    options.transform = [].concat(options.transform || []).concat(options.t || [])
+    mapLimit(options.transform, 1, iterate, function (err) {
       if (err) return done(err)
       done(null, src)
     })
