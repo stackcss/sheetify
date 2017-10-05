@@ -19,10 +19,9 @@ test('transform-package', function (t) {
       t.equal(res, expected, 'CSS was transformed')
     })
 
-    const bOpts = { browserField: false }
     const bpath = path.join(__dirname, 'fixtures/transform-package/source.js')
 
-    browserify(bpath, bOpts)
+    browserify(bpath)
       .transform(sheetify)
       .transform(function (file) {
         return through(function (buf, enc, next) {
