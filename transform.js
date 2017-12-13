@@ -114,8 +114,6 @@ function transform (filename, options) {
         return self.emit('error', err)
       }
 
-      self.emit('file', resolvePath)
-
       const iOpts = node.arguments[1]
         ? xtend(opts, staticEval(node.arguments[1]))
         : opts
