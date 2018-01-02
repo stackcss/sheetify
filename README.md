@@ -99,6 +99,54 @@ By using `:host` we are able to provide styles for the parent element:
 </style>
 ```
 
+## Dynamic vs static
+Sheetify is very good for namespacing static css assets in your javaScript code. Currently there is no support for dynamic variables within sheetify, however you could achieve this by setting the inline style property of an element.
+
+```js
+const css = require('sheetify')
+const html = require('bel')
+
+const sectionWidth = '100px';
+const prefix = css`
+  :host {
+    background-color: blue;
+  }
+
+  :host > h1 {
+    text-decoration: underline;
+  }
+`
+
+const tree = html`
+  <section class=${prefix} style="width:${sectionWidth}">
+    <h1>My beautiful, centered title</h1>
+  </section>
+`
+
+document.body.appendChild(tree)
+```
+
+Should you want to, you could even set dynamic variables in an object and do a rather complicated JSON.stringify with a replace on that object to turn it into a style for an element.
+
+```js
+
+const dynamicStyles = {
+  width: global.window.innerWidth,
+  height: global.window.innerHeight,
+}
+
+let dynamicStyleString = JSON.stringify(dynamicStyles)
+    .replace(/\,/g,';')
+    .replace(/\"/g,'')
+    .replace(/\{|\}/g,'')
+
+const tree = html`
+  <div style="${dynamicStyleString}">
+    <h1>My beautiful, window width</h1>
+  </div>
+`
+```
+
 
 ## External files
 To include an external CSS file you can pass a path to sheetify as
