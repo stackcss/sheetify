@@ -22,6 +22,8 @@
   ],
   "dependencies": {
     "falafel": "^2.1.0",
+    "fast-json-parse": "^1.0.2",
+    "findup": "^0.1.5",
     "insert-css": "^2.0.0",
     "map-limit": "0.0.1",
     "postcss": "^5.0.10",

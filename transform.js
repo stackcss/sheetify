@@ -1,8 +1,10 @@
 const cssResolve = require('style-resolve').sync
 const staticEval = require('static-eval')
+const parse = require('fast-json-parse')
 const mapLimit = require('map-limit')
 const through = require('through2')
 const falafel = require('falafel')
+const findup = require('findup')
 const xtend = require('xtend')
 const path = require('path')
 const fs = require('fs')
@@ -18,11 +20,9 @@ function transform (filename, options) {
 
   const opts = xtend(options || {
     basedir: process.cwd(),
-    use: [],
+    transform: [],
     out: ''
   })
-
-  opts.use = [].concat(opts.use || []).concat(opts.u || [])
 
   const bufs = []
   const transformStream = through(write, end)
@@ -54,19 +54,25 @@ function transform (filename, options) {
       return
     }
 
-    try {
-      const tmpAst = falafel(src, { ecmaVersion: 8 }, identifyModuleName)
-      ast = falafel(tmpAst.toString(), { ecmaVersion: 8 }, extractNodes)
-    } catch (err) {
-      return self.emit('error', err)
-    }
-
-    // transform all detected nodes and
-    // close stream when done
-    mapLimit(nodes, Infinity, iterate, function (err) {
+    findTransforms(filename, function (err, transforms) {
       if (err) return self.emit('error', err)
-      self.push(ast.toString())
-      self.push(null)
+
+      opts.transform = transforms.concat(opts.transform || []).concat(opts.t || [])
+
+      try {
+        const tmpAst = falafel(src, { ecmaVersion: 8 }, identifyModuleName)
+        ast = falafel(tmpAst.toString(), { ecmaVersion: 8 }, extractNodes)
+      } catch (err) {
+        return self.emit('error', err)
+      }
+
+      // transform all detected nodes and
+      // close stream when done
+      mapLimit(nodes, Infinity, iterate, function (err) {
+        if (err) return self.emit('error', err)
+        self.push(ast.toString())
+        self.push(null)
+      })
     })
 
     function identifyModuleName (node) {
@@ -163,6 +169,27 @@ function transform (filename, options) {
         done()
       })
     }
+  }
+
+  function findTransforms (filename, done) {
+    findup(filename, 'package.json', function (err, pathname) {
+      // no package.json found - just run local transforms
+      if (err) return done(null, [])
+
+      var filename = path.join(pathname, 'package.json')
+      fs.readFile(filename, function (err, file) {
+        if (err) return done(err)
+        var parsed = parse(file)
+        if (parsed.err) return done(parsed.err)
+        var json = parsed.value
+        var d = json.sheetify
+        if (!d) return done(null, [])
+        var t = d.transform
+        if (!t || !Array.isArray(t)) return done(null, [])
+
+        return done(null, t)
+      })
+    })
   }
 }
 

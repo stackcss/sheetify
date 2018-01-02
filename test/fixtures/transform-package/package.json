@@ -1,0 +1,12 @@
+{
+  "sheetify": {
+    "transform": [
+      [
+        "sheetify-cssnext",
+        {
+          "sourcemap": false
+        }
+      ]
+    ]
+  }
+}
