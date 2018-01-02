@@ -8,9 +8,5 @@
         }
       ]
     ]
-  },
-  "dependencies": {
-    "sheetify": "file:../../..",
-    "sheetify-cssnext": "^1.0.0"
   }
 }
