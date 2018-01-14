@@ -113,6 +113,7 @@ function transform (filename, options) {
       if (node.type !== 'CallExpression') return
       if (!node.callee || node.callee.type !== 'Identifier') return
       if (node.callee.name !== mname) return
+      if (!node.arguments[0] || !node.arguments[0].value) return
       var pathOpts = { basedir: path.dirname(filename) }
       try {
         var resolvePath = cssResolve(node.arguments[0].value, pathOpts)
