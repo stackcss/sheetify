@@ -24,6 +24,17 @@ function transform (filename, options) {
     out: ''
   })
 
+  opts.transform = [].concat(opts.transform || []).concat(opts.t || []).map(function (plugin) {
+    // resolve subarg syntax
+    if (typeof plugin === 'object' && Array.isArray(plugin._)) {
+      return [
+        plugin._[0],
+        plugin
+      ]
+    }
+    return plugin
+  })
+
   const bufs = []
   const transformStream = through(write, end)
   return transformStream
