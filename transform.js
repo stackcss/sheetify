@@ -135,7 +135,7 @@ function transform (filename, options) {
 
         if (elements) {
           const val = {
-            css: elements.map(function (part) { return part.value }),
+            css: elements.map(function (part) { return part.value }).join(''),
             filename: filename,
             opts: xtend(opts),
             node: node

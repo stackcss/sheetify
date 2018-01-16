@@ -28,7 +28,7 @@ test('transpilers', function (t) {
     }
 
     browserify(bPath, bOpts)
-      .transform(babelify)
+      .transform(babelify, { presets: ['env'] })
       .transform(sheetify)
       .transform(function (file) {
         return through(function (buf, enc, next) {
