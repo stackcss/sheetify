@@ -13,6 +13,11 @@ const sheetify = require('./index')
 
 module.exports = transform
 
+function isBabelTemplateDefinition (node) {
+  return node.type === 'CallExpression' &&
+    node.callee.type === 'Identifier' && node.callee.name === '_taggedTemplateLiteral'
+}
+
 // inline sheetify transform for browserify
 // obj -> (str, opts) -> str
 function transform (filename, options) {
@@ -44,6 +49,7 @@ function transform (filename, options) {
     // but tough times call for tough measure. Please don't
     // judge us too harshly, we'll work on perf ✨soon✨ -yw
     const nodes = []
+    const babelTemplateObjects = {}
     const src = Buffer.concat(bufs).toString('utf8')
     var mname = null
     var ast
@@ -92,21 +98,44 @@ function transform (filename, options) {
     }
 
     function extractTemplateNodes (node) {
-      if (node.type !== 'TemplateLiteral') return
-      if (!node.parent || !node.parent.tag) return
-      if (node.parent.tag.name !== mname) return
-
-      const css = [ node.quasis.map(cooked) ]
-        .concat(node.expressions.map(expr)).join('').trim()
-
-      const val = {
-        css: css,
-        filename: filename,
-        opts: xtend(opts),
-        node: node.parent
+      if (node.type === 'VariableDeclarator' && node.init && isBabelTemplateDefinition(node.init)) {
+        // Babel generates helper calls like
+        //    _taggedTemplateLiteral(["<div","/>"], ["<div","/>"])
+        // The first parameter is the `cooked` template literal parts, and the second parameter is the `raw`
+        // template literal parts.
+        // We just pick the cooked parts.
+        babelTemplateObjects[node.id.name] = node.init.arguments[0]
       }
 
-      nodes.push(val)
+      if (node.type === 'TemplateLiteral' && node.parent && node.parent.tag) {
+        if (node.parent.tag.name !== mname) return
+
+        const css = [ node.quasis.map(cooked) ]
+          .concat(node.expressions.map(expr)).join('').trim()
+
+        const val = {
+          css: css,
+          filename: filename,
+          opts: xtend(opts),
+          node: node.parent
+        }
+
+        nodes.push(val)
+      }
+
+      if (node.type === 'CallExpression' && node.callee.type === 'Identifier' && node.callee.name === mname) {
+        if (node.arguments[0] && node.arguments[0].type === 'Identifier') {
+          const templateObject = babelTemplateObjects[node.arguments[0].name]
+          const val = {
+            css: templateObject.elements.map(function (part) { return part.value }),
+            filename: filename,
+            opts: xtend(opts),
+            node: node
+          }
+
+          nodes.push(val)
+        }
+      }
     }
 
     function extractImportNodes (node) {
