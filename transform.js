@@ -100,10 +100,8 @@ function transform (filename, options) {
     function extractTemplateNodes (node) {
       if (node.type === 'VariableDeclarator' && node.init && isBabelTemplateDefinition(node.init)) {
         // Babel generates helper calls like
-        //    _taggedTemplateLiteral(["<div","/>"], ["<div","/>"])
-        // The first parameter is the `cooked` template literal parts, and the second parameter is the `raw`
-        // template literal parts.
-        // We just pick the cooked parts.
+        //    _taggedTemplateLiteral([":host .class { color: hotpink; }"], [":host .class { color: hotpink; }"])
+        // we only keep the "cooked" part
         babelTemplateObjects[node.id.name] = node.init.arguments[0]
       }
 
@@ -124,10 +122,20 @@ function transform (filename, options) {
       }
 
       if (node.type === 'CallExpression' && node.callee.type === 'Identifier' && node.callee.name === mname) {
-        if (node.arguments[0] && node.arguments[0].type === 'Identifier') {
-          const templateObject = babelTemplateObjects[node.arguments[0].name]
+        let elements
+        if (node.arguments[0] && node.arguments[0].type === 'ArrayExpression') {
+          // Buble generates code like
+          //     sheetify([":host .class { color: hotpink; }"])
+          elements = node.arguments[0].elements
+        } else if (node.arguments[0] && node.arguments[0].type === 'Identifier') {
+          // Babel generates code like
+          //    sheetify(_templateObject)
+          elements = babelTemplateObjects[node.arguments[0].name].elements
+        }
+
+        if (elements) {
           const val = {
-            css: templateObject.elements.map(function (part) { return part.value }),
+            css: elements.map(function (part) { return part.value }),
             filename: filename,
             opts: xtend(opts),
             node: node

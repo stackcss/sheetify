@@ -40,6 +40,7 @@
     "babel-preset-env": "^1.6.1",
     "babelify": "^8.0.0",
     "browserify": "^13.0.0",
+    "bubleify": "^1.1.0",
     "codecov.io": "^0.1.6",
     "concat-stream": "^1.5.1",
     "css-extract": "^1.1.2",
