@@ -98,6 +98,9 @@ function transform (filename, options) {
     }
 
     function extractTemplateNodes (node) {
+      var css
+      var elements
+
       if (node.type === 'VariableDeclarator' && node.init && isBabelTemplateDefinition(node.init)) {
         // Babel generates helper calls like
         //    _taggedTemplateLiteral([":host .class { color: hotpink; }"], [":host .class { color: hotpink; }"])
@@ -108,21 +111,18 @@ function transform (filename, options) {
       if (node.type === 'TemplateLiteral' && node.parent && node.parent.tag) {
         if (node.parent.tag.name !== mname) return
 
-        const css = [ node.quasis.map(cooked) ]
+        css = [ node.quasis.map(cooked) ]
           .concat(node.expressions.map(expr)).join('').trim()
 
-        const val = {
+        nodes.push({
           css: css,
           filename: filename,
           opts: xtend(opts),
           node: node.parent
-        }
-
-        nodes.push(val)
+        })
       }
 
       if (node.type === 'CallExpression' && node.callee.type === 'Identifier' && node.callee.name === mname) {
-        let elements
         if (node.arguments[0] && node.arguments[0].type === 'ArrayExpression') {
           // Buble generates code like
           //     sheetify([":host .class { color: hotpink; }"])
@@ -134,14 +134,12 @@ function transform (filename, options) {
         }
 
         if (elements) {
-          const val = {
+          nodes.push({
             css: elements.map(function (part) { return part.value }).join(''),
             filename: filename,
             opts: xtend(opts),
             node: node
-          }
-
-          nodes.push(val)
+          })
         }
       }
     }
