@@ -13,6 +13,11 @@ const sheetify = require('./index')
 
 module.exports = transform
 
+function isBabelTemplateDefinition (node) {
+  return node.type === 'CallExpression' &&
+    node.callee.type === 'Identifier' && node.callee.name === '_taggedTemplateLiteral'
+}
+
 // inline sheetify transform for browserify
 // obj -> (str, opts) -> str
 function transform (filename, options) {
@@ -55,6 +60,7 @@ function transform (filename, options) {
     // but tough times call for tough measure. Please don't
     // judge us too harshly, we'll work on perf ✨soon✨ -yw
     const nodes = []
+    const babelTemplateObjects = {}
     const src = Buffer.concat(bufs).toString('utf8')
     var mname = null
     var ast
@@ -103,27 +109,57 @@ function transform (filename, options) {
     }
 
     function extractTemplateNodes (node) {
-      if (node.type !== 'TemplateLiteral') return
-      if (!node.parent || !node.parent.tag) return
-      if (node.parent.tag.name !== mname) return
+      var css
+      var elements
 
-      const css = [ node.quasis.map(cooked) ]
-        .concat(node.expressions.map(expr)).join('').trim()
-
-      const val = {
-        css: css,
-        filename: filename,
-        opts: xtend(opts),
-        node: node.parent
+      if (node.type === 'VariableDeclarator' && node.init && isBabelTemplateDefinition(node.init)) {
+        // Babel generates helper calls like
+        //    _taggedTemplateLiteral([":host .class { color: hotpink; }"], [":host .class { color: hotpink; }"])
+        // we only keep the "cooked" part
+        babelTemplateObjects[node.id.name] = node.init.arguments[0]
       }
 
-      nodes.push(val)
+      if (node.type === 'TemplateLiteral' && node.parent && node.parent.tag) {
+        if (node.parent.tag.name !== mname) return
+
+        css = [ node.quasis.map(cooked) ]
+          .concat(node.expressions.map(expr)).join('').trim()
+
+        nodes.push({
+          css: css,
+          filename: filename,
+          opts: xtend(opts),
+          node: node.parent
+        })
+      }
+
+      if (node.type === 'CallExpression' && node.callee.type === 'Identifier' && node.callee.name === mname) {
+        if (node.arguments[0] && node.arguments[0].type === 'ArrayExpression') {
+          // Buble generates code like
+          //     sheetify([":host .class { color: hotpink; }"])
+          elements = node.arguments[0].elements
+        } else if (node.arguments[0] && node.arguments[0].type === 'Identifier') {
+          // Babel generates code like
+          //    sheetify(_templateObject)
+          elements = babelTemplateObjects[node.arguments[0].name].elements
+        }
+
+        if (elements) {
+          nodes.push({
+            css: elements.map(function (part) { return part.value }).join(''),
+            filename: filename,
+            opts: xtend(opts),
+            node: node
+          })
+        }
+      }
     }
 
     function extractImportNodes (node) {
       if (node.type !== 'CallExpression') return
       if (!node.callee || node.callee.type !== 'Identifier') return
       if (node.callee.name !== mname) return
+      if (!node.arguments[0] || !node.arguments[0].value) return
       var pathOpts = { basedir: path.dirname(filename) }
       try {
         var resolvePath = cssResolve(node.arguments[0].value, pathOpts)
