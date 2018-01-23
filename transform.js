@@ -171,6 +171,8 @@ function transform (filename, options) {
         ? xtend(opts, staticEval(node.arguments[1]))
         : opts
 
+      transformStream.emit('file', resolvePath)
+
       const val = {
         filename: resolvePath,
         opts: iOpts,
