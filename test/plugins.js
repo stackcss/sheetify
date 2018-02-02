@@ -76,6 +76,7 @@ test('plugins', function (t) {
       .on('file', onfile)
       .on('transform', ontransform)
       .bundle(function (err, result) {
+        t.ifError(err)
         t.deepEqual(actualFiles.sort(), expectedFiles.sort())
         t.end()
       })
