@@ -64,15 +64,15 @@ function parseCss (src, filename, prefix, options, done) {
   assert.equal(typeof options, 'object', 'options must be a object')
   assert.equal(typeof done, 'function', 'done must be a function')
 
-  applyTransforms(filename, String(src), xtend(options), function (err, css) {
+  applyTransforms(filename, String(src), xtend(options), function (err, result) {
     if (err) return done(err)
     var p = postcss()
     p = p.use(cssPrefix('.' + prefix))
 
     try {
-      css = p.process(css).toString()
+      result.css = p.process(result.css).toString()
 
-      return done(null, css, prefix)
+      return done(null, result, prefix)
     } catch (e) {
       return done(e)
     }
@@ -82,9 +82,10 @@ function parseCss (src, filename, prefix, options, done) {
   // one at the time
   // (str, str, obj, fn) -> null
   function applyTransforms (filename, src, options, done) {
+    var current = { css: src, files: [] }
     mapLimit(options.transform, 1, iterate, function (err) {
       if (err) return done(err)
-      done(null, src)
+      done(null, current)
     })
 
     // find and apply a transform to a string of css
@@ -106,9 +107,14 @@ function parseCss (src, filename, prefix, options, done) {
         if (err) return done(err)
 
         const transform = require(transformPath)
-        transform(filename, src, opts, function (err, result) {
+        transform(filename, current.css, opts, function (err, result) {
           if (err) return next(err)
-          src = result
+          if (typeof result === 'string') {
+            current.css = result
+          } else {
+            current.css = result.css
+            current.files = current.files.concat(result.files)
+          }
           next()
         })
       })
