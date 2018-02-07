@@ -55,4 +55,39 @@ test('plugins', function (t) {
         t.end()
       }))
   })
+
+  t.test('should emit \'file\' events if transform included more files', function (t) {
+    const bpath = path.join(__dirname, 'fixtures/plugins-source.js')
+    const bOpts = { browserField: false }
+    const expectedFiles = [
+      bpath,
+      '/path/to/included/file.css'
+    ]
+    const actualFiles = []
+    browserify(bpath, bOpts)
+      .transform(sheetify, {
+        transform: [
+          [ require.resolve('./fixtures/files-plugin'), {
+            file: '/path/to/included/file.css'
+          } ]
+        ]
+      })
+      .exclude('sheetify/insert')
+      .on('file', onfile)
+      .on('transform', ontransform)
+      .bundle(function (err, result) {
+        t.ifError(err)
+        t.deepEqual(actualFiles.sort(), expectedFiles.sort())
+        t.end()
+      })
+
+    function onfile (filename) {
+      if (actualFiles.indexOf(filename) === -1) {
+        actualFiles.push(filename)
+      }
+    }
+    function ontransform (tr) {
+      tr.on('file', onfile)
+    }
+  })
 })

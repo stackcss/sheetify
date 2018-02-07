@@ -202,10 +202,10 @@ function transform (filename, options) {
     }
 
     function handleCss (val) {
-      sheetify(val.css, val.filename, val.opts, function (err, css, prefix) {
+      sheetify(val.css, val.filename, val.opts, function (err, result, prefix) {
         if (err) return done(err)
         const str = [
-          "((require('sheetify/insert')(" + JSON.stringify(css) + ')',
+          "((require('sheetify/insert')(" + JSON.stringify(result.css) + ')',
           ' || true) && ' + JSON.stringify(prefix) + ')'
         ].join('')
 
@@ -215,6 +215,11 @@ function transform (filename, options) {
           ? ''
           : ';'
         val.node.update(lolSemicolon + str)
+
+        result.files.forEach(function (includedFile) {
+          transformStream.emit('file', includedFile)
+        })
+
         done()
       })
     }
