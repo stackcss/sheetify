@@ -53,7 +53,7 @@
     "jsdom": "^9.4.2",
     "npm-check-updates": "^2.2.0",
     "rimraf": "^2.5.1",
-    "sheetify-cssnext": "^1.0.0",
+    "sheetify-cssnext": "^2.0.0",
     "standard": "^8.0.0",
     "subarg": "^1.0.0",
     "tape": "^4.2.0"
