@@ -43,7 +43,7 @@ $ browserify -t sheetify index.js > bundle.js
 
 CSS classes are namespaced based on the content hash:
 ```css
-._60ed23ec9f h1 {
+._60ed23ec9f > h1 {
   text-align: center;
 }
 ```
