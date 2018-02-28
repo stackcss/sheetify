@@ -1,9 +1,9 @@
 const cssResolve = require('style-resolve').sync
+const transformAst = require('transform-ast')
 const staticEval = require('static-eval')
 const parse = require('fast-json-parse')
 const mapLimit = require('map-limit')
 const through = require('through2')
-const falafel = require('falafel')
 const findup = require('findup')
 const xtend = require('xtend')
 const path = require('path')
@@ -77,8 +77,11 @@ function transform (filename, options) {
       opts.transform = transforms.concat(opts.transform || []).concat(opts.t || [])
 
       try {
-        const tmpAst = falafel(src, { ecmaVersion: 8 }, identifyModuleName)
-        ast = falafel(tmpAst.toString(), { ecmaVersion: 8 }, extractNodes)
+        ast = transformAst(src, {
+          parser: require('acorn-node'),
+          inputFilename: path.basename(filename)
+        }, identifyModuleName)
+        ast.walk(extractNodes)
       } catch (err) {
         return self.emit('error', err)
       }
@@ -87,7 +90,9 @@ function transform (filename, options) {
       // close stream when done
       mapLimit(nodes, Infinity, iterate, function (err) {
         if (err) return self.emit('error', err)
-        self.push(ast.toString())
+        self.push(ast.toString({
+          map: opts && opts._flags && opts._flags.debug
+        }))
         self.push(null)
       })
     })
