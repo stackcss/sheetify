@@ -192,7 +192,7 @@ function transform (filename, options) {
   // then replace the AST nodes with new values
   // (obj, fn) -> null
   function iterate (val, done) {
-    if (val.css) return handleCss(val)
+    if (typeof val.css === 'string') return handleCss(val)
 
     if (/\.js$/.test(val.filename)) {
       delete require.cache[require.resolve(val.filename)]

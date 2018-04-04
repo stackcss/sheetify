@@ -124,7 +124,14 @@ test('prefix', function (t) {
     const bOpts = { browserField: false }
     const bpath = path.join(__dirname, 'fixtures/prefix-empty-source.js')
     browserify(bpath, bOpts)
-      .transform(transform)
+      .transform(sheetify)
+      .transform(function (file) {
+        return through(function (buf, enc, next) {
+          const str = buf.toString('utf8')
+          this.push(str.replace(/sheetify\/insert/, 'insert-css'))
+          next()
+        })
+      })
       .plugin('css-extract', { out: outFn })
       .bundle()
 
