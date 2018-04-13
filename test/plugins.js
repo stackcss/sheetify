@@ -90,4 +90,24 @@ test('plugins', function (t) {
       tr.on('file', onfile)
     }
   })
+
+  t.test('should be allowed to be functions', function (t) {
+    const bpath = path.join(__dirname, 'fixtures/plugins-source.js')
+    const bOpts = { browserField: false }
+    browserify(bpath, bOpts)
+      .transform(sheetify, {
+        transform: [
+          function (filename, css, opts, cb) {
+            t.pass('called the transform')
+            cb(null, '.whatever{}')
+          }
+        ]
+      })
+      .exclude('sheetify/insert')
+      .bundle(function (err, result) {
+        t.ifError(err)
+        t.notEqual(result.indexOf('.whatever{}'), -1)
+        t.end()
+      })
+  })
 })

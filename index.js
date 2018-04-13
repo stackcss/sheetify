@@ -91,7 +91,7 @@ function parseCss (src, filename, prefix, options, done) {
     // find and apply a transform to a string of css
     // (fn, fn) -> null
     function iterate (plugin, next) {
-      if (typeof plugin === 'string') {
+      if (typeof plugin === 'string' || typeof plugin === 'function') {
         plugin = [ plugin, {} ]
       } else if (!Array.isArray(plugin)) {
         return done(new Error('Plugin must be a string or array'))
@@ -99,6 +99,9 @@ function parseCss (src, filename, prefix, options, done) {
 
       const name = plugin[0]
       const opts = plugin[1] || {}
+      if (typeof name === 'function') {
+        ontransform(name, opts)
+      }
 
       const resolveOpts = {
         basedir: opts.basedir || options.basedir || process.cwd()
@@ -107,6 +110,10 @@ function parseCss (src, filename, prefix, options, done) {
         if (err) return done(err)
 
         const transform = require(transformPath)
+        ontransform(transform, opts)
+      })
+
+      function ontransform (transform, opts) {
         transform(filename, current.css, opts, function (err, result) {
           if (err) return next(err)
           if (typeof result === 'string') {
@@ -117,7 +124,7 @@ function parseCss (src, filename, prefix, options, done) {
           }
           next()
         })
-      })
+      }
     }
   }
 }
