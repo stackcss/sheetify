@@ -100,7 +100,7 @@ function parseCss (src, filename, prefix, options, done) {
       const name = plugin[0]
       const opts = plugin[1] || {}
       if (typeof name === 'function') {
-        ontransform(name, opts)
+        return transformLoaded(name, opts)
       }
 
       const resolveOpts = {
@@ -110,10 +110,10 @@ function parseCss (src, filename, prefix, options, done) {
         if (err) return done(err)
 
         const transform = require(transformPath)
-        ontransform(transform, opts)
+        transformLoaded(transform, opts)
       })
 
-      function ontransform (transform, opts) {
+      function transformLoaded (transform, opts) {
         transform(filename, current.css, opts, function (err, result) {
           if (err) return next(err)
           if (typeof result === 'string') {
