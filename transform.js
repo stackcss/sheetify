@@ -1,3 +1,4 @@
+const isMemberExpression = require('estree-is-member-expression')
 const cssResolve = require('style-resolve').sync
 const transformAst = require('transform-ast')
 const staticEval = require('static-eval')
@@ -16,6 +17,13 @@ module.exports = transform
 function isBabelTemplateDefinition (node) {
   return node.type === 'CallExpression' &&
     node.callee.type === 'Identifier' && node.callee.name === '_taggedTemplateLiteral'
+}
+
+function isBubleTemplateDefinition (node) {
+  return node.type === 'CallExpression' &&
+    isMemberExpression(node.callee, 'Object.freeze') &&
+    node.arguments[0] && node.arguments[0].type === 'ArrayExpression' &&
+    node.arguments[0].elements.every(function (el) { return el.type === 'Literal' })
 }
 
 // inline sheetify transform for browserify
@@ -61,6 +69,7 @@ function transform (filename, options) {
     // judge us too harshly, we'll work on perf ✨soon✨ -yw
     const nodes = []
     const babelTemplateObjects = {}
+    const bubleTemplateObjects = {}
     const src = Buffer.concat(bufs).toString('utf8')
     var mname = null
     var ast
@@ -117,11 +126,17 @@ function transform (filename, options) {
       var css
       var elements
 
-      if (node.type === 'VariableDeclarator' && node.init && isBabelTemplateDefinition(node.init)) {
-        // Babel generates helper calls like
-        //    _taggedTemplateLiteral([":host .class { color: hotpink; }"], [":host .class { color: hotpink; }"])
-        // we only keep the "cooked" part
-        babelTemplateObjects[node.id.name] = node.init.arguments[0]
+      if (node.type === 'VariableDeclarator' && node.init) {
+        if (isBabelTemplateDefinition(node.init)) {
+          // Babel generates helper calls like
+          //    _taggedTemplateLiteral([":host .class { color: hotpink; }"], [":host .class { color: hotpink; }"])
+          // we only keep the "cooked" part
+          babelTemplateObjects[node.id.name] = node.init.arguments[0]
+        } else if (isBubleTemplateDefinition(node.init)) {
+          // Buble generates helper calls like
+          //    Object.freeze([":host .class { color: hotpink; }"])
+          bubleTemplateObjects[node.id.name] = node.init.arguments[0]
+        }
       }
 
       if (node.type === 'TemplateLiteral' && node.parent && node.parent.tag) {
@@ -146,7 +161,12 @@ function transform (filename, options) {
         } else if (node.arguments[0] && node.arguments[0].type === 'Identifier') {
           // Babel generates code like
           //    sheetify(_templateObject)
-          elements = babelTemplateObjects[node.arguments[0].name].elements
+          var arg = node.arguments[0].name
+          if (babelTemplateObjects[arg]) {
+            elements = babelTemplateObjects[arg].elements
+          } else if (bubleTemplateObjects[arg]) {
+            elements = bubleTemplateObjects[arg].elements
+          }
         }
 
         if (elements) {
