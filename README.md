@@ -19,7 +19,7 @@ like [browserify](http://browserify.org/) does.
 Given some inline CSS:
 ```js
 const css = require('sheetify')
-const html = require('bel')
+const html = require('nanohtml')
 
 const prefix = css`
   :host > h1 {
@@ -60,7 +60,7 @@ The element that gets a prefix applied can be styled using the [`:host`
 pseudoselector][1]:
 ```js
 const css = require('sheetify')
-const html = require('bel')
+const html = require('nanohtml')
 
 const prefix = css`
   :host {
@@ -104,7 +104,7 @@ Sheetify is very good for namespacing static css assets in your javaScript code.
 
 ```js
 const css = require('sheetify')
-const html = require('bel')
+const html = require('nanohtml')
 
 const sectionWidth = '100px';
 const prefix = css`
@@ -153,7 +153,7 @@ To include an external CSS file you can pass a path to sheetify as
 `sheetify('./my-file.css')`:
 ```js
 const css = require('sheetify')
-const html = require('bel')
+const html = require('nanohtml')
 
 const prefix = css('./my-styles.css')
 
@@ -195,7 +195,7 @@ For example include
 autoprefixing, variables and more:
 ```js
 const css = require('sheetify')
-const html = require('bel')
+const html = require('nanohtml')
 
 const prefix = css`
   h1 {
