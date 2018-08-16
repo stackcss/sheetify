@@ -40,7 +40,7 @@ function sheetify (src, filename, options, done) {
     css = src
   }
 
-  const prefix = getPrefix(css)
+  const prefix = options.prefix || getPrefix(css)
 
   // only parse if in a browserify transform
   if (typeof filename === 'string') parseCss(src, filename, prefix, options, done)
