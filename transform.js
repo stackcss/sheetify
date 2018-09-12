@@ -68,8 +68,8 @@ function transform (filename, options) {
     // but tough times call for tough measure. Please don't
     // judge us too harshly, we'll work on perf ✨soon✨ -yw
     const nodes = []
-    const babelTemplateObjects = {}
-    const bubleTemplateObjects = {}
+    const babelTemplateDeclarations = {}
+    const bubleTemplateDeclarations = {}
     const src = Buffer.concat(bufs).toString('utf8')
     var mname = null
     var ast
@@ -131,11 +131,11 @@ function transform (filename, options) {
           // Babel generates helper calls like
           //    _taggedTemplateLiteral([":host .class { color: hotpink; }"], [":host .class { color: hotpink; }"])
           // we only keep the "cooked" part
-          babelTemplateObjects[node.id.name] = node.init.arguments[0]
+          babelTemplateDeclarations[node.id.name] = node
         } else if (isBubleTemplateDefinition(node.init)) {
           // Buble generates helper calls like
           //    Object.freeze([":host .class { color: hotpink; }"])
-          bubleTemplateObjects[node.id.name] = node.init.arguments[0]
+          bubleTemplateDeclarations[node.id.name] = node
         }
       }
 
@@ -162,10 +162,20 @@ function transform (filename, options) {
           // Babel generates code like
           //    sheetify(_templateObject)
           var arg = node.arguments[0].name
-          if (babelTemplateObjects[arg]) {
-            elements = babelTemplateObjects[arg].elements
-          } else if (bubleTemplateObjects[arg]) {
-            elements = bubleTemplateObjects[arg].elements
+          var templateDeclaration =
+            babelTemplateDeclarations[arg] || bubleTemplateDeclarations[arg]
+          if (templateDeclaration) {
+            var template = templateDeclaration.init.arguments[0]
+            elements = template.elements
+
+            /*
+            We want to remove transpiled var declaration for minification to work.
+
+            var ...,
+                _templateObject2 = _taggedTemplateLiteral(['.foo { color: blue; }'], ['.foo { color: blue; }']),
+                ...;
+            */
+            removeVariableDeclarator(templateDeclaration)
           }
         }
 
@@ -178,6 +188,36 @@ function transform (filename, options) {
           })
         }
       }
+    }
+
+    function removeVariableDeclarator (node) {
+      /*
+      Remove `a` declaration from compound `var` statement:
+      var ...,
+          a = B,
+          ...
+      */
+      var parent = node.parent
+      var offset = parent.start
+      var at = parent.declarations.indexOf(node)
+      var total = parent.declarations.length
+      var str = parent.getSource()
+
+      var stripped
+      if (total === 1) {
+        stripped = ' '.repeat(str.length) // remove whole "var ...;" statement
+      } else if (at < total - 1) { // not last
+        stripped =
+          str.slice(0, node.start - offset) +
+          ' '.repeat(node.end - node.start + 1) +
+          str.slice(node.end - offset + 1)
+      } else { // last one
+        stripped =
+          str.slice(0, node.start - offset - 6) +
+          ' '.repeat(node.end - node.start + 6) +
+          str.slice(node.end - offset)
+      }
+      parent.update(stripped)
     }
 
     function extractImportNodes (node) {
