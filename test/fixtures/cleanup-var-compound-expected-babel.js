@@ -61,10 +61,8 @@ module.exports.insertCss = insertCss;
 },{}],2:[function(require,module,exports){
 'use strict';
 
-var                                                                                                                            
-    _templateObject2 = _taggedTemplateLiteral(['<p>beep</p>'], ['<p>beep</p>']),
-                                                                                                                                    
-    _templateObject4 = _taggedTemplateLiteral(['<p>boop</p>'], ['<p>boop</p>'])                                                                                                                                   ;
+var                                                                                                                                 _templateObject2 = _taggedTemplateLiteral(['<p>beep</p>'], ['<p>beep</p>']),
+                                                                                                                                         _templateObject4 = _taggedTemplateLiteral(['<p>boop</p>'], ['<p>boop</p>'])                                                                                                                                   ;
 
 function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
 
@@ -84,4 +82,3 @@ var blue = ((require('insert-css')("._64de6524 {\n    color: blue;\n  }") || tru
 console.log(blue);
 
 },{"insert-css":1}]},{},[2]);
-

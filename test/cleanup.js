@@ -12,7 +12,7 @@ const sheetify = require('..')
 test('transpiled code cleanup', function (t) {
   t.test('with babel', function (t) {
     t.test('compound var statement', function (t) {
-      t.plan(1)
+      t.plan(2)
 
       bundle(
         path.join(__dirname, 'fixtures/cleanup-var-compound.js'),
@@ -26,7 +26,7 @@ test('transpiled code cleanup', function (t) {
     })
 
     t.test('simple var statement', function (t) {
-      t.plan(1)
+      t.plan(2)
 
       bundle(
         path.join(__dirname, 'fixtures/cleanup-var-simple.js'),
@@ -42,7 +42,7 @@ test('transpiled code cleanup', function (t) {
 
   t.test('with buble', function (t) {
     t.test('compound var statement', function (t) {
-      t.plan(1)
+      t.plan(2)
 
       bundle(
         path.join(__dirname, 'fixtures/cleanup-var-compound.js'),
@@ -56,7 +56,7 @@ test('transpiled code cleanup', function (t) {
     })
 
     t.test('simple var statement', function (t) {
-      t.plan(1)
+      t.plan(2)
 
       bundle(
         path.join(__dirname, 'fixtures/cleanup-var-simple.js'),
@@ -72,7 +72,7 @@ test('transpiled code cleanup', function (t) {
 })
 
 function bundle (path, compiler, cb) {
-  let bfy = browserify(path, { browserField: false })
+  var bfy = browserify(path, { browserField: false })
   bfy =
       compiler === 'babel' ? bfy.transform(babelify, { presets: ['env'] })
     : compiler === 'buble' ? bfy.transform(bubleify, { transforms: { dangerousTaggedTemplateString: true } })

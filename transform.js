@@ -202,19 +202,22 @@ function transform (filename, options) {
       var at = parent.declarations.indexOf(node)
       var total = parent.declarations.length
       var str = parent.getSource()
+      var prevNode, nextNode
 
       var stripped
       if (total === 1) {
         stripped = ' '.repeat(str.length) // remove whole "var ...;" statement
       } else if (at < total - 1) { // not last
+        nextNode = parent.declarations[at + 1]
         stripped =
           str.slice(0, node.start - offset) +
-          ' '.repeat(node.end - node.start + 1) +
-          str.slice(node.end - offset + 1)
+          ' '.repeat(nextNode.start - node.start) +
+          str.slice(nextNode.start - offset)
       } else { // last one
+        prevNode = parent.declarations[at - 1]
         stripped =
-          str.slice(0, node.start - offset - 6) +
-          ' '.repeat(node.end - node.start + 6) +
+          str.slice(0, prevNode.end - offset) +
+          ' '.repeat(node.end - prevNode.end) +
           str.slice(node.end - offset)
       }
       parent.update(stripped)
