@@ -7,7 +7,7 @@
   "scripts": {
     "deps": "dependency-check . --entry transform.js . && dependency-check . --entry transform.js --extra --no-dev -i insert-css",
     "test": "standard && npm run deps && tape test/index.js",
-    "test:cov": "standard && npm run deps && NODE_ENV=test istanbul cover test/index.js",
+    "test:cov": "standard && npm run deps && NODE_ENV=test nyc node test/index.js",
     "format": "standard --format"
   },
   "browser": {
@@ -55,8 +55,8 @@
     "dependency-check": "^2.5.1",
     "domify": "^1.4.0",
     "from2-string": "^1.1.0",
-    "istanbul": "^0.4.5",
     "jsdom": "^9.4.2",
+    "nyc": "^11.9.0",
     "rimraf": "^2.5.1",
     "sheetify-cssnext": "^2.0.1",
     "standard": "^11.0.1",
