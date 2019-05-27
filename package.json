@@ -13,6 +13,11 @@
   "browser": {
     "index.js": "./browser.js"
   },
+  "standard": {
+    "ignore": [
+      "test/fixtures"
+    ]
+  },
   "keywords": [
     "modular",
     "css",
