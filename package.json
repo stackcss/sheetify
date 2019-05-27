@@ -57,7 +57,6 @@
     "from2-string": "^1.1.0",
     "istanbul": "^0.4.5",
     "jsdom": "^9.4.2",
-    "npm-check-updates": "^2.2.0",
     "rimraf": "^2.5.1",
     "sheetify-cssnext": "^2.0.1",
     "standard": "^11.0.1",
