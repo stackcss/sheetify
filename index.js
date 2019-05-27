@@ -4,7 +4,6 @@ const mapLimit = require('map-limit')
 const postcss = require('postcss')
 const assert = require('assert')
 const crypto = require('crypto')
-const xtend = require('xtend')
 const stackTrace = require('stack-trace')
 const cssResolve = require('style-resolve').sync
 const fs = require('fs')
@@ -64,7 +63,7 @@ function parseCss (src, filename, prefix, options, done) {
   assert.equal(typeof options, 'object', 'options must be a object')
   assert.equal(typeof done, 'function', 'done must be a function')
 
-  applyTransforms(filename, String(src), xtend(options), function (err, result) {
+  applyTransforms(filename, String(src), Object.assign({}, options), function (err, result) {
     if (err) return done(err)
     var p = postcss()
     p = p.use(cssPrefix('.' + prefix))

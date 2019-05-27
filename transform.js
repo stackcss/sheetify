@@ -6,7 +6,6 @@ const parse = require('fast-json-parse')
 const findup = require('@choojs/findup')
 const mapLimit = require('map-limit')
 const through = require('through2')
-const xtend = require('xtend')
 const path = require('path')
 const fs = require('fs')
 
@@ -31,7 +30,7 @@ function isBubleTemplateDefinition (node) {
 function transform (filename, options) {
   if (/\.json$/i.test(filename)) return through()
 
-  const opts = xtend(options || {
+  const opts = Object.assign({}, options || {
     basedir: process.cwd(),
     transform: [],
     out: ''
@@ -148,7 +147,7 @@ function transform (filename, options) {
         nodes.push({
           css: css,
           filename: filename,
-          opts: xtend(opts),
+          opts: Object.assign({}, opts),
           node: node.parent
         })
       }
@@ -183,7 +182,7 @@ function transform (filename, options) {
           nodes.push({
             css: elements.map(function (part) { return part.value }).join(''),
             filename: filename,
-            opts: xtend(opts),
+            opts: Object.assign({}, opts),
             node: node
           })
         }
@@ -236,7 +235,7 @@ function transform (filename, options) {
       }
 
       const iOpts = node.arguments[1]
-        ? xtend(opts, staticEval(node.arguments[1]))
+        ? Object.assign({}, opts, staticEval(node.arguments[1]))
         : opts
 
       transformStream.emit('file', resolvePath)
