@@ -73,10 +73,8 @@ test('transpiled code cleanup', function (t) {
 
 function bundle (path, compiler, cb) {
   var bfy = browserify(path, { browserField: false })
-  bfy =
-      compiler === 'babel' ? bfy.transform(babelify, { presets: ['env'] })
-    : compiler === 'buble' ? bfy.transform(bubleify, { transforms: { dangerousTaggedTemplateString: true } })
-    : bfy
+  if (compiler === 'babel') bfy.transform(babelify, { presets: ['env'] })
+  if (compiler === 'buble') bfy.transform(bubleify, { transforms: { dangerousTaggedTemplateString: true } })
 
   bfy
     .transform(sheetify)

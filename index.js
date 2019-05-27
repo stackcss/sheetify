@@ -31,7 +31,7 @@ function sheetify (src, filename, options, done) {
   // Ensure prefix is always correct when run from inside node
   var css
   if (!isTemplate && (!filename || typeof filename === 'object')) {
-     // module or file name via tagged template call w or w/out options
+    // module or file name via tagged template call w or w/out options
     const callerDirname = path.dirname(stackTrace.get()[1].getFileName())
     const resolved = cssResolve(src, { basedir: callerDirname })
     css = fs.readFileSync(resolved, 'utf8')
