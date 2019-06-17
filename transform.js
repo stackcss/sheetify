@@ -10,6 +10,7 @@ const path = require('path')
 const fs = require('fs')
 
 const sheetify = require('./index')
+const SUPPORTED_VIEWS = require('./lib/supported-views')
 
 module.exports = transform
 
@@ -73,7 +74,8 @@ function transform (filename, options) {
     var mname = null
     var ast
 
-    if (src.indexOf('sheetify') === -1) {
+    // Skip transforming any files that do not contain synonyms for sheetify
+    if (!SUPPORTED_VIEWS.some(name => src.indexOf(name) > -1)) {
       self.push(src)
       self.push(null)
       return
@@ -110,7 +112,7 @@ function transform (filename, options) {
       if (node.type === 'CallExpression' &&
       node.callee && node.callee.name === 'require' &&
       node.arguments.length === 1 &&
-      node.arguments[0].value === 'sheetify') {
+      SUPPORTED_VIEWS.some(name => node.arguments[0].value === name)) {
         node.update('0')
         mname = node.parent.id.name
       }
