@@ -75,7 +75,7 @@ function transform (filename, options) {
     var ast
 
     // Skip transforming any files that do not contain synonyms for sheetify
-    if (!SUPPORTED_VIEWS.some(name => src.indexOf(name) > -1)) {
+    if (!SUPPORTED_VIEWS.some(name => src.includes(name))) {
       self.push(src)
       self.push(null)
       return
@@ -112,7 +112,7 @@ function transform (filename, options) {
       if (node.type === 'CallExpression' &&
       node.callee && node.callee.name === 'require' &&
       node.arguments.length === 1 &&
-      SUPPORTED_VIEWS.some(name => node.arguments[0].value === name)) {
+      SUPPORTED_VIEWS.includes(node.arguments[0].value)) {
         node.update('0')
         mname = node.parent.id.name
       }
