@@ -55,6 +55,7 @@
     "dependency-check": "^2.5.1",
     "domify": "^1.4.0",
     "from2-string": "^1.1.0",
+    "hui": "^1.2.2",
     "jsdom": "^9.4.2",
     "nyc": "^11.9.0",
     "rimraf": "^2.5.1",
