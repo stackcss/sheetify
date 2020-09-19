@@ -32,7 +32,7 @@
     "fast-json-parse": "^1.0.2",
     "insert-css": "^2.0.0",
     "map-limit": "0.0.1",
-    "postcss": "^6.0.23",
+    "postcss": "^8.0.5",
     "postcss-prefix": "^2.0.0",
     "resolve": "^1.1.7",
     "stack-trace": "0.0.10",
