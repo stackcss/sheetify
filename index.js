@@ -65,8 +65,7 @@ function parseCss (src, filename, prefix, options, done) {
 
   applyTransforms(filename, String(src), Object.assign({}, options), function (err, result) {
     if (err) return done(err)
-    var p = postcss()
-    p = p.use(cssPrefix('.' + prefix))
+    var p = postcss([cssPrefix('.' + prefix)])
 
     try {
       result.css = p.process(result.css).toString()
